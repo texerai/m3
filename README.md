@@ -1,7 +1,6 @@
-# mmm or m3
-Memory Marionette Model
+# M3: Memory Marionette Model
 
-mmm or m-cube is a set of libraries to integrate with functional emulators like
+M3 is a set of libraries to integrate with functional emulators like
 Dromajo and Spike to perform multicore verification.
 
 The code was originaly at dromajo repository, and moved to a separate repo to
