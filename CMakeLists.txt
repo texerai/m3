@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add source files
 set(M3_SOURCES
     source/memory_marionette.cpp
-    source/Gold_data.cpp
+    source/data.cpp
     source/Gold_notify.cpp
     source/lrand.cpp
     source/rvutils.cpp

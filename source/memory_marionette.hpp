@@ -2,7 +2,7 @@
 
 #include <deque>
 
-#include "Gold_data.hpp"
+#include "data.hpp"
 #include "Gold_mem.hpp"
 #include "explicit_type.hpp"
 
@@ -38,23 +38,23 @@ class MemoryMarionette {
     void nuke(Inst_id nuke_id);
 
     /** st_data_ref
-     * Pointer to the Gold_data for the stored data in this operation. May be
+     * Pointer to the Data for the stored data in this operation. May be
      * used to populate address and/or data.
      */
-    Gold_data &st_data_ref(Inst_id iid);
+    Data &st_data_ref(Inst_id iid);
 
     /** ld_data_ref
-     * Pointer to the Gold_data for the stored data in this operation. May be
+     * Pointer to the Data for the stored data in this operation. May be
      * used to populate address. The data will be computed when
      * ld_globally_perform is called
      */
-    Gold_data &ld_data_ref(Inst_id iid);
+    Data &ld_data_ref(Inst_id iid);
 
     /** ld_globally_perform
      * When a load (or load part of atomic ops) is performed. The time that the
      * value is bound to the register
      */
-    const Gold_data &ld_perform(Inst_id iid);
+    const Data &ld_perform(Inst_id iid);
 
     /** st_locally_perform
      * Time when the address/data in the st_data_ref is populated. It is used to
@@ -118,8 +118,8 @@ class MemoryMarionette {
         }
 
         Inst_id     rid;
-        Gold_data   ld_data;
-        Gold_data   st_data;
+        Data        ld_data;
+        Data        st_data;
         Mem_op      op;
         bool        performed = false;
         std::string error;

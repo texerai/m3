@@ -68,11 +68,11 @@ MemoryMarionette::Rob_entry &MemoryMarionette::find_entry(Inst_id iid) {
     return *rob_it;
 }
 
-Gold_data &MemoryMarionette::ld_data_ref(Inst_id iid) { return find_entry(iid).ld_data; }
+Data &MemoryMarionette::ld_data_ref(Inst_id iid) { return find_entry(iid).ld_data; }
 
-Gold_data &MemoryMarionette::st_data_ref(Inst_id iid) { return find_entry(iid).st_data; }
+Data &MemoryMarionette::st_data_ref(Inst_id iid) { return find_entry(iid).st_data; }
 
-const Gold_data &MemoryMarionette::ld_perform(Inst_id iid) {
+const Data &MemoryMarionette::ld_perform(Inst_id iid) {
     // Get the entry.
     auto &ent = find_entry(iid);
 

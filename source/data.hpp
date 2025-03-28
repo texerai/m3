@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <algorithm>
@@ -11,10 +10,9 @@
 
 #include "lrand.hpp"
 
-class Gold_data {
+class Data {
   public:
     void clear() {
-        device = false;
         chunks.clear();
     }
 
@@ -116,7 +114,7 @@ class Gold_data {
         return has_full_overlap(addr, sz) || has_partial_overlap(addr, sz);
     }
 
-    bool has_partial_overlap(const Gold_data &d2) const {
+    bool has_partial_overlap(const Data &d2) const {
         for (auto const &c : d2.chunks) {
             if (has_partial_overlap(c.addr, c.data.size()))
                 return true;
@@ -154,7 +152,7 @@ class Gold_data {
 
     void dump() const { std::cout << str(); }
 
-    void add_newer(const Gold_data &d2) {
+    void add_newer(const Data &d2) {
         for (const auto c : d2.chunks) {
             add_addr(c.addr, c.data.size());
             for (auto i = 0u; i < c.data.size(); ++i) {
@@ -166,7 +164,7 @@ class Gold_data {
     // Updates the chunk data from another chunk
     // iff they have overlapping addresses.
     // Returns false if no chunk was updates.
-    bool update_newer(const Gold_data &d2) {
+    bool update_newer(const Data &d2) {
         bool is_updated = false;
         for (const auto c : d2.chunks) {
             // Skip if the chunk has no overlaps.
@@ -198,7 +196,7 @@ class Gold_data {
         }
     }
 
-    bool operator==(const Gold_data &d2) const {
+    bool operator==(const Data &d2) const {
         if (device && d2.device) {
             return false;  // do not flag diff/error of device
         }
@@ -219,7 +217,7 @@ class Gold_data {
         return true;
     }
 
-    bool operator!=(const Gold_data &d2) const {
+    bool operator!=(const Data &d2) const {
         if (device && d2.device) {
             return false;  // do not flag diff/error of device
         }
@@ -227,7 +225,7 @@ class Gold_data {
         return !(*this == d2);
     }
 
-    Gold_data() { device = false; }
+    Data() { device = false; }
 
   protected:
     static Lrand<uint8_t> rand_data;

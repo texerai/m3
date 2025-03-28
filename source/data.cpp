@@ -1,10 +1,10 @@
-#include "Gold_data.hpp"
+#include "data.hpp"
 #include <cstdio>
 
-Lrand<uint8_t> Gold_data::rand_data;
-Lrand<uint8_t> Gold_data::Chunk::rand_data;
+Lrand<uint8_t> Data::rand_data;
+Lrand<uint8_t> Data::Chunk::rand_data;
 
-std::string Gold_data::str() const {
+std::string Data::str() const {
     std::string msg;
     char buffer[1024];
 
