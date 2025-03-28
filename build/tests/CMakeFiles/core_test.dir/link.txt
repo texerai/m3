@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/core_test.dir/core_test.cpp.o  -o core_test  ../libGold.a 
