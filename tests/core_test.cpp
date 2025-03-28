@@ -1,10 +1,10 @@
+#include "memory.hpp"
 #include "memory_marionette.hpp"
 
 uint8_t get_byte(uint64_t addr) { return addr >> 4; }
 
 int main() {
-    Gold_mem mem(get_byte);
-
+    Memory mem(get_byte);
     MemoryMarionette core(mem, 0);
 
     auto oldest_ld = core.inorder();

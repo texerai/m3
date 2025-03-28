@@ -1,10 +1,13 @@
 #include "memory_marionette.hpp"
 
+#include <algorithm>
+#include <iostream>
+
 #include "Gold_notify.hpp"
 
 Inst_id MemoryMarionette::global_instid;
 
-MemoryMarionette::MemoryMarionette(Gold_mem &m, int id) : mem(m), cid(id) {}
+MemoryMarionette::MemoryMarionette(Memory &m, int id) : mem(m), cid(id) {}
 
 Inst_id MemoryMarionette::inorder() {
     global_instid = global_instid + 1;

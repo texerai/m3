@@ -1,9 +1,13 @@
 #pragma once
 
+#include <cstdint>
+#include <functional>
+#include <vector>
 #include <deque>
 
 #include "data.hpp"
-#include "Gold_mem.hpp"
+#include "memory.hpp"
+#include "robin_hood.hpp"
 #include "explicit_type.hpp"
 
 using Inst_id = Explicit_type<int, struct Inst_id_struct, 0>;
@@ -86,7 +90,7 @@ class MemoryMarionette {
     /** Constructor
      *
      */
-    explicit MemoryMarionette(Gold_mem &m, int id);
+    explicit MemoryMarionette(Memory &m, int id);
 
   protected:
     struct Rob_entry {
@@ -127,7 +131,7 @@ class MemoryMarionette {
 
     Rob_entry &find_entry(Inst_id iid);
 
-    Gold_mem &mem;
+    Memory &mem;
 
     static Inst_id global_instid;
 

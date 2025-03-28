@@ -7,10 +7,10 @@
 #include "data.hpp"
 #include "robin_hood.hpp"
 
-class Gold_mem {
+class Memory {
     public:
-        Gold_mem() = default;
-        Gold_mem(std::function<uint8_t(uint64_t)> gb) : get_byte(gb) {
+        Memory() = default;
+        Memory(std::function<uint8_t(uint64_t)> gb) : get_byte(gb) {
             is_init = true;
         }
 
