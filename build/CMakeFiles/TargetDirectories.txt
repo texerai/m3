@@ -1,0 +1,7 @@
+/home/kabylkas/texerai/m3/build/CMakeFiles/rebuild_cache.dir
+/home/kabylkas/texerai/m3/build/CMakeFiles/edit_cache.dir
+/home/kabylkas/texerai/m3/build/CMakeFiles/Gold.dir
+/home/kabylkas/texerai/m3/build/tests/CMakeFiles/rebuild_cache.dir
+/home/kabylkas/texerai/m3/build/tests/CMakeFiles/edit_cache.dir
+/home/kabylkas/texerai/m3/build/tests/CMakeFiles/data_test.dir
+/home/kabylkas/texerai/m3/build/tests/CMakeFiles/core_test.dir

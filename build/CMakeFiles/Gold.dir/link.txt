@@ -1,0 +1,2 @@
+/usr/bin/ar qc libGold.a  CMakeFiles/Gold.dir/gold/Gold_core.cpp.o CMakeFiles/Gold.dir/gold/Gold_data.cpp.o CMakeFiles/Gold.dir/gold/Gold_notify.cpp.o CMakeFiles/Gold.dir/gold/lrand.cpp.o CMakeFiles/Gold.dir/gold/rvutils.cpp.o CMakeFiles/Gold.dir/gold/tracer.cpp.o
+/usr/bin/ranlib libGold.a

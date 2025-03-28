@@ -100,8 +100,10 @@ const Gold_data &Gold_core::ld_perform(Inst_id iid) {
         for (auto it = rob.rbegin(); it != rob_end; ++it) {
             assert(it->rid < iid);
             if (it->st_data.has_data() && it->performed) {
-                Gold_nofity::info("ld iid:{} fwd from st iid:{}", iid, it->rid);
-                ent.ld_data.update_newer(it->st_data);
+                bool is_updated = ent.ld_data.update_newer(it->st_data);
+                if (is_updated) {
+                    Gold_nofity::info("ld iid:{} fwd from st iid:{}", iid, it->rid);
+                }
             }
         }
     }
@@ -176,12 +178,14 @@ void Gold_core::st_locally_merged(Inst_id iid1, Inst_id iid2) {
 
         if (rob_it2->rid == iid1) {
             assert(rob_it2 == rob_it1);
-            rob_it1->st_merge(d2);        
+            std::cout << "INFO: merging st iid: " << iid2 << "to st iid:" << iid1 << std::endl;
+            rob_it1->st_merge(d2);
             rob.erase(std::find_if(rob.begin(), rob.end(), [&iid2](const Rob_entry &x) { return x.rid == iid2; }));
             break;
         }
+
         if (rob_it2->ld_data.has_partial_overlap(d2.st_data) && !rob_it2->performed) {
-            std::cout << "FAIL: between st id:" << iid2 << "and id:" << iid1
+            std::cout << "FAIL: between st id: " << iid2 << "and id:" << iid1
                       << " there is a still not performed with partial overlap ld id:" << rob_it2->rid << "\n";
             d2.dump("merged");
             rob_it2->dump("match");

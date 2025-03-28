@@ -42,8 +42,8 @@ class Gold_data {
             if ((c.addr + c.data.size()) == addr) {
                 c.data.emplace_back(rand_data.any());
 
-                if (chunks.size() < i && chunks[i + 1].addr == addr) {  // merge with
-                                                                        // next
+                // Merge with the next chunk.
+                if (i < chunks.size() - 1 && chunks[i + 1].addr == addr + 1) {
                     c.data.insert(c.data.end(), chunks[i + 1].data.begin(), chunks[i + 1].data.end());
                     ++i;
                     chunks.erase(chunks.begin() + i);
@@ -87,6 +87,11 @@ class Gold_data {
                 //          [addr; addr+sz]
                 return true;
             }
+            if (c.addr >= addr && addr + sz >= c.addr + c.data.size()) {
+                //         [c;  c+size]
+                //     [addr;          addr+sz]
+                return true;
+            }
         }
         return false;
     }
@@ -106,6 +111,11 @@ class Gold_data {
         }
         return false;
     }
+
+    bool has_overlap(const uint64_t addr, const uint8_t sz) const {
+        return has_full_overlap(addr, sz) || has_partial_overlap(addr, sz);
+    }
+
     bool has_partial_overlap(const Gold_data &d2) const {
         for (auto const &c : d2.chunks) {
             if (has_partial_overlap(c.addr, c.data.size()))
@@ -153,9 +163,14 @@ class Gold_data {
         }
     }
 
-    void update_newer(const Gold_data &d2) {
+    // Updates the chunk data from another chunk
+    // iff they have overlapping addresses.
+    // Returns false if no chunk was updates.
+    bool update_newer(const Gold_data &d2) {
+        bool is_updated = false;
         for (const auto c : d2.chunks) {
-            if (!has_partial_overlap(c.addr, c.data.size()))
+            // Skip if the chunk has no overlaps.
+            if (!has_overlap(c.addr, c.data.size()))
                 continue;
 
             for (auto i = 0u; i < c.data.size(); ++i) {
@@ -163,8 +178,10 @@ class Gold_data {
                     continue;
 
                 set_byte(c.addr + i, c.data[i]);
+                is_updated = true;
             }
         }
+        return is_updated;
     }
 
     void set_device() { device = true; }
