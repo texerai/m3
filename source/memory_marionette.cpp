@@ -1,13 +1,12 @@
-
-#include "Gold_core.hpp"
+#include "memory_marionette.hpp"
 
 #include "Gold_notify.hpp"
 
-Inst_id Gold_core::global_instid;
+Inst_id MemoryMarionette::global_instid;
 
-Gold_core::Gold_core(Gold_mem &m, int id) : mem(m), cid(id) {}
+MemoryMarionette::MemoryMarionette(Gold_mem &m, int id) : mem(m), cid(id) {}
 
-Inst_id Gold_core::inorder() {
+Inst_id MemoryMarionette::inorder() {
     global_instid = global_instid + 1;
     auto i        = global_instid;
 
@@ -19,7 +18,7 @@ Inst_id Gold_core::inorder() {
     return i;
 }
 
-void Gold_core::set_type(Inst_id iid, Mem_op op) {
+void MemoryMarionette::set_type(Inst_id iid, Mem_op op) {
     auto it = std::find_if(rob.begin(), rob.end(), [&iid](const Rob_entry &x) { return x.rid == iid; });
 
     if (it == rob.end()) {
@@ -30,12 +29,12 @@ void Gold_core::set_type(Inst_id iid, Mem_op op) {
     it->performed = false;
 }
 
-void Gold_core::set_safe(Inst_id iid) {
+void MemoryMarionette::set_safe(Inst_id iid) {
     if (iid >= pnr)
         pnr = iid;
 }
 
-void Gold_core::nuke(Inst_id iid) {
+void MemoryMarionette::nuke(Inst_id iid) {
     if (iid < pnr) {
         dump();
         Gold_nofity::fail("nuke id:{} for already safe pnr:{}", iid, pnr);
@@ -56,7 +55,7 @@ void Gold_core::nuke(Inst_id iid) {
     }
 }
 
-Gold_core::Rob_entry &Gold_core::find_entry(Inst_id iid) {
+MemoryMarionette::Rob_entry &MemoryMarionette::find_entry(Inst_id iid) {
     auto rob_it = std::find_if(rob.begin(), rob.end(), [&iid](const Rob_entry &x) { return x.rid == iid; });
 
     if (rob_it == rob.end()) {
@@ -69,11 +68,11 @@ Gold_core::Rob_entry &Gold_core::find_entry(Inst_id iid) {
     return *rob_it;
 }
 
-Gold_data &Gold_core::ld_data_ref(Inst_id iid) { return find_entry(iid).ld_data; }
+Gold_data &MemoryMarionette::ld_data_ref(Inst_id iid) { return find_entry(iid).ld_data; }
 
-Gold_data &Gold_core::st_data_ref(Inst_id iid) { return find_entry(iid).st_data; }
+Gold_data &MemoryMarionette::st_data_ref(Inst_id iid) { return find_entry(iid).st_data; }
 
-const Gold_data &Gold_core::ld_perform(Inst_id iid) {
+const Gold_data &MemoryMarionette::ld_perform(Inst_id iid) {
     // Get the entry.
     auto &ent = find_entry(iid);
 
@@ -116,7 +115,7 @@ const Gold_data &Gold_core::ld_perform(Inst_id iid) {
     return ent.ld_data;
 }
 
-void Gold_core::st_locally_perform(Inst_id iid) {
+void MemoryMarionette::st_locally_perform(Inst_id iid) {
     auto &ent = find_entry(iid);
 
     if (!ent.st_data.has_data()) {
@@ -150,7 +149,7 @@ void Gold_core::st_locally_perform(Inst_id iid) {
     }
 }
 
-void Gold_core::st_locally_merged(Inst_id iid1, Inst_id iid2) {
+void MemoryMarionette::st_locally_merged(Inst_id iid1, Inst_id iid2) {
     if (iid1 > iid2) {  // swap, so that iid1 is older
         auto tmp = iid1;
         iid1     = iid2;
@@ -201,7 +200,7 @@ void Gold_core::st_locally_merged(Inst_id iid1, Inst_id iid2) {
     }
 }
 
-void Gold_core::st_globally_perform(Inst_id iid) {
+void MemoryMarionette::st_globally_perform(Inst_id iid) {
     auto rob_it1 = std::find_if(rob.begin(), rob.end(), [&iid](const Rob_entry &x) { return x.rid == iid; });
 
     if (rob_it1 == rob.end()) {
@@ -263,7 +262,7 @@ void Gold_core::st_globally_perform(Inst_id iid) {
     assert(std::find_if(rob.begin(), rob.end(), [&iid](const Rob_entry &x) { return x.rid == iid; }) == rob.end());
 }
 
-bool Gold_core::has_error(Inst_id iid) const {
+bool MemoryMarionette::has_error(Inst_id iid) const {
     auto it = std::find_if(rob.begin(), rob.end(), [&iid](const Rob_entry &x) { return x.rid == iid; });
 
     if (it == rob.end())
@@ -272,7 +271,7 @@ bool Gold_core::has_error(Inst_id iid) const {
     return !it->error.empty();
 }
 
-void Gold_core::dump() const {
+void MemoryMarionette::dump() const {
     std::cout << "==================================================\n";
     std::cout << "core cid:" << cid << " pnr:" << pnr << "\n";
 

@@ -10,7 +10,7 @@ using Inst_id = Explicit_type<int, struct Inst_id_struct, 0>;
 
 enum class Mem_op { Invalid, Load, Store, Ack, Rel, AckRel };
 
-class Gold_core {
+class MemoryMarionette {
   public:
     /** inorder
      * Gets the in-order ID for instructions through the pipeline
@@ -86,7 +86,7 @@ class Gold_core {
     /** Constructor
      *
      */
-    explicit Gold_core(Gold_mem &m, int id);
+    explicit MemoryMarionette(Gold_mem &m, int id);
 
   protected:
     struct Rob_entry {

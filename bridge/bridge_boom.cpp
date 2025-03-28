@@ -9,14 +9,14 @@
 #include <vector>
 
 // Local libraries.
-#include "Gold_core.hpp"
 #include "Gold_notify.hpp"
-#include "riscv_utils.h"
+#include "rvutils.h"
+#include "memory_marionette.hpp"
 
 extern uint8_t dromajo_get_byte_direct(uint64_t paddr);
 static Gold_mem               mem(dromajo_get_byte_direct);
 
-static std::vector<Gold_core> cores;
+static std::vector<MemoryMarionette> cores;
 
 enum class MemopType
 {

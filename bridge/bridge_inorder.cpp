@@ -1,7 +1,7 @@
 #include <vector>
 
-#include "Gold_core.hpp"
 #include "Gold_notify.hpp"
+#include "memory_marionette.hpp"
 
 /* dromajo is an emulator, so much of the OoO capabilities are not needed.
  */
@@ -9,7 +9,7 @@
 extern uint8_t dromajo_get_byte_direct(uint64_t paddr);
 
 static Gold_mem               mem(dromajo_get_byte_direct);
-static std::vector<Gold_core> cores;
+static std::vector<MemoryMarionette> cores;
 
 void check_inorder_init(int ncores) {
     for (int i = 0; i < ncores; ++i) {
