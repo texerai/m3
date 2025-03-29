@@ -1,16 +1,20 @@
 #pragma once
 
+#include <cstdint>
+#include <functional>
+#include <vector>
 #include <deque>
 
-#include "Gold_data.hpp"
-#include "Gold_mem.hpp"
+#include "data.hpp"
+#include "memory.hpp"
+#include "robin_hood.hpp"
 #include "explicit_type.hpp"
 
 using Inst_id = Explicit_type<int, struct Inst_id_struct, 0>;
 
 enum class Mem_op { Invalid, Load, Store, Ack, Rel, AckRel };
 
-class Gold_core {
+class MemoryMarionette {
   public:
     /** inorder
      * Gets the in-order ID for instructions through the pipeline
@@ -38,23 +42,23 @@ class Gold_core {
     void nuke(Inst_id nuke_id);
 
     /** st_data_ref
-     * Pointer to the Gold_data for the stored data in this operation. May be
+     * Pointer to the Data for the stored data in this operation. May be
      * used to populate address and/or data.
      */
-    Gold_data &st_data_ref(Inst_id iid);
+    Data &st_data_ref(Inst_id iid);
 
     /** ld_data_ref
-     * Pointer to the Gold_data for the stored data in this operation. May be
+     * Pointer to the Data for the stored data in this operation. May be
      * used to populate address. The data will be computed when
      * ld_globally_perform is called
      */
-    Gold_data &ld_data_ref(Inst_id iid);
+    Data &ld_data_ref(Inst_id iid);
 
     /** ld_globally_perform
      * When a load (or load part of atomic ops) is performed. The time that the
      * value is bound to the register
      */
-    const Gold_data &ld_perform(Inst_id iid);
+    const Data &ld_perform(Inst_id iid);
 
     /** st_locally_perform
      * Time when the address/data in the st_data_ref is populated. It is used to
@@ -86,7 +90,7 @@ class Gold_core {
     /** Constructor
      *
      */
-    explicit Gold_core(Gold_mem &m, int id);
+    explicit MemoryMarionette(Memory &m, int id);
 
   protected:
     struct Rob_entry {
@@ -118,8 +122,8 @@ class Gold_core {
         }
 
         Inst_id     rid;
-        Gold_data   ld_data;
-        Gold_data   st_data;
+        Data        ld_data;
+        Data        st_data;
         Mem_op      op;
         bool        performed = false;
         std::string error;
@@ -127,7 +131,7 @@ class Gold_core {
 
     Rob_entry &find_entry(Inst_id iid);
 
-    Gold_mem &mem;
+    Memory &mem;
 
     static Inst_id global_instid;
 

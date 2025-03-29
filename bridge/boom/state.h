@@ -1,13 +1,13 @@
 /*
- * Copyright (c) 2023 Micro Architecture Santa Cruz
+ * Copyright (c) 2025 Micro Architecture Santa Cruz
  * and Texer.ai. All rights reserved.
  */
 #ifndef STATE_H_
 #define STATE_H_
 
 // Local libraries.
-#include "Gold_core.hpp"
 #include "memop_info.h"
+#include "memory_marionette.hpp"
 
 // C++ libraries.
 #include <stdint.h>
@@ -15,7 +15,7 @@
 
 namespace m3
 {
-    using M3Cores = std::vector<Gold_core>;
+    using M3Cores = std::vector<MemoryMarionette>;
 
     static const uint32_t kBoomCacheWays = 4;
     struct Cache

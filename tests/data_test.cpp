@@ -1,9 +1,8 @@
-
-#include "Gold_data.hpp"
+#include "data.hpp"
 
 int main() {
-    Gold_data d1;
-    Gold_data d2;
+    Data d1;
+    Data d2;
 
     d1.set_addr(33, 5);
 
@@ -39,8 +38,10 @@ int main() {
 
     d2.dump();
 
-    Gold_data d3 = d1;
+    Data d3 = d1;
     d3.add_newer(d2);
 
     d3.dump();
+
+    return 0;
 }

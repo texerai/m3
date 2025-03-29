@@ -4,13 +4,13 @@
 
 #include <algorithm>
 
-#include "Gold_data.hpp"
+#include "data.hpp"
 #include "robin_hood.hpp"
 
-class Gold_mem {
+class Memory {
     public:
-        Gold_mem() = default;
-        Gold_mem(std::function<uint8_t(uint64_t)> gb) : get_byte(gb) {
+        Memory() = default;
+        Memory(std::function<uint8_t(uint64_t)> gb) : get_byte(gb) {
             is_init = true;
         }
 
@@ -19,7 +19,7 @@ class Gold_mem {
             is_init = true;
         }
 
-        void st_perform(const Gold_data &st_data) {
+        void st_perform(const Data &st_data) {
             st_data.each_chunk([this](uint64_t addr, const std::vector<uint8_t> &data) {
                 for (auto b_pos = 0u; b_pos < data.size(); ++b_pos) {
                     mem_byte[addr + b_pos] = data[b_pos];
@@ -27,7 +27,7 @@ class Gold_mem {
             });
         }
 
-        void ld_perform(Gold_data &ld_data) {
+        void ld_perform(Data &ld_data) {
             if (!is_init) {
                 std::cout << "Error: Gold_mem not initialized." << std::endl;
                 return;
