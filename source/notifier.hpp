@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cstdarg>
 
-class Gold_nofity {
+class Notifier {
   protected:
     static void trace_int(uint64_t iid, const std::string &text);
     static void fail_int(const std::string &text);

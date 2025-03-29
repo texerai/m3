@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(M3_SOURCES
     source/memory_marionette.cpp
     source/data.cpp
-    source/Gold_notify.cpp
+    source/notifier.cpp
     source/lrand.cpp
     source/rvutils.cpp
     source/tracer.cpp

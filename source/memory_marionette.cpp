@@ -1,9 +1,10 @@
 #include "memory_marionette.hpp"
+#include "notifier.hpp"
+#include <cstdio>
+#include <cassert>
 
 #include <algorithm>
 #include <iostream>
-
-#include "Gold_notify.hpp"
 
 Inst_id MemoryMarionette::global_instid;
 
@@ -40,7 +41,7 @@ void MemoryMarionette::set_safe(Inst_id iid) {
 void MemoryMarionette::nuke(Inst_id iid) {
     if (iid < pnr) {
         dump();
-        Gold_nofity::fail("nuke id:{} for already safe pnr:{}", iid, pnr);
+        Notifier::fail("nuke id:{} for already safe pnr:{}", iid, pnr);
         return;
     }
 
@@ -104,7 +105,7 @@ const Data &MemoryMarionette::ld_perform(Inst_id iid) {
             if (it->st_data.has_data() && it->performed) {
                 bool is_updated = ent.ld_data.update_newer(it->st_data);
                 if (is_updated) {
-                    Gold_nofity::info("ld iid:{} fwd from st iid:{}", iid, it->rid);
+                    Notifier::info("ld iid:{} fwd from st iid:{}", iid, it->rid);
                 }
             }
         }
@@ -113,7 +114,7 @@ const Data &MemoryMarionette::ld_perform(Inst_id iid) {
     ent.performed = true;
     ent.error.clear();
 
-    Gold_nofity::trace(iid, "core:{} ld gp{}", cid, ent.ld_data.str());
+    Notifier::trace(iid, "core:{} ld gp{}", cid, ent.ld_data.str());
 
     return ent.ld_data;
 }
@@ -132,7 +133,7 @@ void MemoryMarionette::st_locally_perform(Inst_id iid) {
     Rob_queue::reverse_iterator rob_it;
     rob_it = std::find_if(rob.rbegin(), rob.rend(), [&iid](const Rob_entry &x) { return x.rid == iid; });
 
-    Gold_nofity::trace(iid, "core:{} st lp{}", cid, rob_it->st_data.str());
+    Notifier::trace(iid, "core:{} st lp{}", cid, rob_it->st_data.str());
 
     ++rob_it;  // Skip itself
 
@@ -237,7 +238,7 @@ void MemoryMarionette::st_globally_perform(Inst_id iid) {
     st_locally_perform(iid);  // even if performed, we can check again (just in
                               // case missing API call)
 
-    Gold_nofity::trace(iid, "core:{} st gp{}", cid, rob_it1->st_data.str());
+    Notifier::trace(iid, "core:{} st gp{}", cid, rob_it1->st_data.str());
 
     mem.st_perform(rob_it1->st_data);
 

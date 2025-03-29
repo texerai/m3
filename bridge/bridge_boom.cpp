@@ -9,12 +9,12 @@
 #include <vector>
 
 // Local libraries.
-#include "Gold_notify.hpp"
+#include "notifier.hpp"
 #include "rvutils.h"
 #include "memory_marionette.hpp"
 
 extern uint8_t dromajo_get_byte_direct(uint64_t paddr);
-static Gold_mem               mem(dromajo_get_byte_direct);
+static Memory mem(dromajo_get_byte_direct);
 
 static std::vector<MemoryMarionette> cores;
 
