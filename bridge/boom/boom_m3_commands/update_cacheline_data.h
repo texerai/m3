@@ -10,13 +10,13 @@
 namespace m3
 {
     // Forward declarations.
-    struct RTLEventData;
+    struct RtlHookData;
 
     class UpdateCachelineData : public IM3Command
     {
     public:
         UpdateCachelineData() = delete;
-        UpdateCachelineData(const RTLEventData& data);
+        UpdateCachelineData(const RtlHookData& data);
         bool Execute(State& state) override;
         bool Execute(State& state, Tracer& m3tracer) override;
 

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2023 Micro Architecture Santa Cruz
+ * Copyright (c) 2025 Micro Architecture Santa Cruz
  * and Texer.ai. All rights reserved.
  */
-#ifndef BOOM_M3_T_H_
-#define BOOM_M3_T_H_
+#ifndef BRIDGE_BOOM_T_H_
+#define BRIDGE_BOOM_T_H_
 
 // C++ libraries.
 #include <memory>
@@ -16,20 +16,20 @@ class dromajo_t;
 namespace m3
 {
     // Forward declarations.
-    struct RTLEventData;
+    struct RtlHookData;
 
-    class boom_m3_t
+    class BridgeBoom
     {
     public:
-        void init(uint32_t ncores, std::shared_ptr<dromajo_t> core_model_ptr);
-        void register_event(const RTLEventData& data);
-        bool serve_registered_events();
-        void close();
+        void Init(uint32_t ncores);
+        void RegisterEvent(const RtlHookData& data);
+        bool ServeRegisteredEvents();
+        void Close();
 
     private:
-        struct boom_m3_impl;
-        boom_m3_impl* pimpl_ = nullptr;
+        struct BridgeBoomImpl;
+        BridgeBoomImpl* pimpl_ = nullptr;
     };
 
 }
-#endif // BOOM_M3_T_H_
+#endif // BRIDGE_BOOM_T_H_

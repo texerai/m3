@@ -8,28 +8,17 @@
 #include <cassert>
 #include <memory>
 #include <unordered_map>
+#include <functional>
 
 // Local libraries.
-#include "dromajo_t.h"
-#include "Gold_mem.hpp"
+#include "memory.hpp"
+#include "rtl_hook.h"
 #include "rvutils.h"
 #include "state.h"
 #include "tracer.h"
 
-// M3 commands.
-#include "m3command.h"
-#include "commit_memop.h"
-#include "complete_store.h"
-#include "create_memop.h"
-#include "add_address.h"
-#include "add_store_data.h"
-#include "perform_load.h"
-#include "update_cacheline_state.h"
-#include "update_cacheline_data.h"
-
-// m3 memory interface.
 extern uint8_t dromajo_get_byte_direct(uint64_t paddr);
-static Gold_mem mem(dromajo_get_byte_direct);
+static Memory mem(dromajo_get_byte_direct);
 
 namespace m3
 {
@@ -45,19 +34,83 @@ namespace m3
     static Tracer m3tracer;
     static State state;
 
-    // Implementation struct.
-    struct boom_m3_t::boom_m3_impl
+    namespace commands
     {
-        std::vector<std::shared_ptr<IM3Command>> commands;
-        std::shared_ptr<dromajo_t> core_model_ptr;
+        static bool CreateMemop(const RtlHookData& data, State& state)
+        {
+
+            M3Cores& m3cores = state.m3cores;
+
+            // Get the entry.
+            MemopInfo& memop_info = state.in_core_memops[data.hart_id][data.rob_id];
+
+            // Remove the entry from M3 if previously allocated entry
+            // did not complete.
+            if (!memop_info.committed && !memop_info.is_just_created)
+            {
+                m3cores[data.hart_id].nuke(memop_info.m3id);
+            }
+
+            // Drop the previous information.
+            memop_info.Invalidate();
+
+            // New entry in m3.
+            memop_info.is_just_created = false;
+            memop_info.m3id = m3cores[data.hart_id].inorder();
+            memop_info.rob_id = data.rob_id;
+            memop_info.load_dest_reg = data.load_dest_reg;
+            // Define memop type: store, load, amo, etc.
+
+            return true;
+        }
+
+        static bool CompleteStore(const RtlHookData& data, State& state)
+        {
+            M3Cores& m3cores = state.m3cores;
+            auto& beyond_core_stores = state.beyond_core_stores;
+
+            // Get the entry.
+            MemopInfo& completing_memop = state.in_core_memops[data.hart_id][data.rob_id];
+            assert(completing_memop.memop_type == MemopType::kStore);
+
+            // Set safe this store.
+            m3cores[data.hart_id].set_safe(completing_memop.m3id);
+
+            // The store can be globally performed soon.
+            // The stores that go to the same cache line can be merged.
+            uint64_t cache_line_tag = completing_memop.address >> 12;
+            bool is_first = beyond_core_stores[data.hart_id].find(cache_line_tag) == beyond_core_stores[data.hart_id].end();
+            if (!is_first)
+            {
+                // Merge what was there previously with the new coming store.
+                MemopInfo& prev_memop = beyond_core_stores[data.hart_id][cache_line_tag];
+                m3cores[data.hart_id].st_locally_merged(prev_memop.m3id, completing_memop.m3id);
+            }
+            else
+            {
+                completing_memop.completed_time = data.timestamp;
+                beyond_core_stores[data.hart_id][cache_line_tag] = completing_memop;
+            }
+
+            return true;
+        }
+
+        static std::map<RtlHook, std::function<bool(const RtlHookData&, State&)>> kRtlHookCommands = {
+            { RtlHook::kCreateMemop, CreateMemop }
+        };
+    }
+
+    // Implementation struct.
+    struct BridgeBoom::BridgeBoomImpl
+    {
+        std::vector<RtlHookData> rtl_hook_data;
     };
 
-    void boom_m3_t::init(uint32_t ncores, std::shared_ptr<dromajo_t> core_model_ptr)
+    void BridgeBoom::Init(uint32_t ncores)
     {
         if (pimpl_ == nullptr)
         {
-            pimpl_ = new boom_m3_impl();
-            pimpl_->core_model_ptr = core_model_ptr;
+            pimpl_ = new BridgeBoomImpl();
 
             for (uint32_t i = 0; i < ncores; ++i)
             {
@@ -69,64 +122,32 @@ namespace m3
         }
     }
 
-    void boom_m3_t::close()
+    void BridgeBoom::Close()
     {
         m3tracer.SaveTrace("m3trace.txt", m3::TraceFileFormat::kJson);
     }
 
-    void boom_m3_t::register_event(const RTLEventData& data)
+    void BridgeBoom::RegisterEvent(const RtlHookData& data)
     {
-        switch (data.event)
-        {
-        case RTLEvent::kCreateMemop:
-            pimpl_->commands.push_back(std::make_shared<CreateMemop>(data));
-            break;
-        case RTLEvent::kAddMemopAddress:
-            pimpl_->commands.push_back(std::make_shared<AddAddress>(data));
-            break;
-        case RTLEvent::kAddStoreData:
-            pimpl_->commands.push_back(std::make_shared<AddStoreData>(data));
-            break;
-        case RTLEvent::kPerformLoad:
-            pimpl_->commands.push_back(std::make_shared<PerformLoad>(data));
-            break;
-        case RTLEvent::kCompleteStore:
-            pimpl_->commands.push_back(std::make_shared<CompleteStore>(data));
-            break;
-        case RTLEvent::kCommitMemop:
-            pimpl_->commands.push_back(std::make_shared<CommitMemop>(data, pimpl_->core_model_ptr));
-            break;
-        case RTLEvent::kUpdateCacheLineState:
-            pimpl_->commands.push_back(std::make_shared<UpdateCachelineState>(data));
-            break;
-        case RTLEvent::kUpdateCacheLineData:
-            pimpl_->commands.push_back(std::make_shared<UpdateCachelineData>(data));
-            break;
-        default:
-            assert(false);
-            break;
-        }
+        pimpl_->rtl_hook_data.push_back(data);
     }
 
-    bool boom_m3_t::serve_registered_events()
+    bool BridgeBoom::ServeRegisteredEvents()
     {
         int32_t execution_priority = kMaxPriority;
         while (execution_priority >= 0)
         {
-            for (auto command : pimpl_->commands)
+            for (auto data : pimpl_->rtl_hook_data)
             {
-                if (command->GetPriority() == execution_priority)
+                uint32_t priority = kRtlHookPriority[data.event];
+                if (priority == execution_priority)
                 {
-                    bool is_good = command->Execute(state, m3tracer);
-                    if (!is_good)
-                    {
-                        return false;
-                    }
+                    bool is_success = commands::kRtlHookCommands[data.event](data, state);
                 }
             }
             --execution_priority;
         }
-        pimpl_->commands.clear();
+        pimpl_->rtl_hook_data.clear();
         return true;
     }
 }

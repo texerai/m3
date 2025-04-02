@@ -17,13 +17,13 @@
 namespace m3
 {
     // Forward declarations.
-    struct RTLEventData;
+    struct RtlHookData;
 
     class CommitMemop : public IM3Command
     {
     public:
         CommitMemop() = delete;
-        CommitMemop(const RTLEventData& data, std::shared_ptr<dromajo_t> core_model_ptr);
+        CommitMemop(const RtlHookData& data, std::shared_ptr<dromajo_t> core_model_ptr);
         bool Execute(State& state) override;
         bool Execute(State& state, Tracer& m3tracer) override;
 

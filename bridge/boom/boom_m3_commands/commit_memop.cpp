@@ -14,7 +14,7 @@ namespace m3
 {
     constexpr bool isDebugOn = true;
 
-    CommitMemop::CommitMemop(const RTLEventData& data, std::shared_ptr<dromajo_t> core_model_ptr)
+    CommitMemop::CommitMemop(const RtlHookData& data, std::shared_ptr<dromajo_t> core_model_ptr)
     {
         data_ = data;
         core_model_ptr_ = core_model_ptr;

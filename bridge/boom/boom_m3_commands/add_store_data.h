@@ -10,13 +10,13 @@
 namespace m3
 {
     // Forward declarations.
-    struct RTLEventData;
+    struct RtlHookData;
 
     class AddStoreData : public IM3Command
     {
     public:
         AddStoreData() = delete;
-        AddStoreData(const RTLEventData& data);
+        AddStoreData(const RtlHookData& data);
         bool Execute(State& state) override;
         bool Execute(State& state, Tracer& m3tracer) override;
     };

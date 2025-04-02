@@ -1,19 +1,18 @@
 /*
- * Copyright (c) 2023-2024 Micro Architecture Santa Cruz
+ * Copyright (c) 2025 Micro Architecture Santa Cruz
  * and Texer.ai. All rights reserved.
  */
-#ifndef RTL_EVENT_H_
-#define RTL_EVENT_H_
+#ifndef RTL_HOOK_H_
+#define RTL_HOOK_H_
 
 // C++ libraries.
+#include <map>
 #include <stdint.h>
-
-// Local libraries.
-#include "memop_info.h"
 
 namespace m3
 {
-    enum class RTLEvent
+    // RTL Hooks exposed from BOOM to the M3 model.
+    enum class RtlHook
     {
         kUndefined,
         kCreateMemop,
@@ -26,11 +25,21 @@ namespace m3
         kUpdateCacheLineData
     };
 
-    struct RTLEventData
+    static std::map<RtlHook, uint32_t> kRtlHookPriority = {
+        { RtlHook::kCreateMemop, 0 },
+        { RtlHook::kAddMemopAddress, 0 },
+        { RtlHook::kPerformLoad, 0 },
+        { RtlHook::kAddStoreData, 0 },
+        { RtlHook::kCompleteStore, 0 },
+        { RtlHook::kCommitMemop, 0 },
+        { RtlHook::kUpdateCacheLineState, 0 },
+        { RtlHook::kUpdateCacheLineData, 0 }
+    };
+
+    // Data that is passed from the RTL to the M3 model.
+    struct RtlHookData
     {
-        RTLEvent event = RTLEvent::kUndefined;
-        MemopType memop_type = MemopType::kUndefined;
-        MemopFormat data_format = MemopFormat::kUndefined;
+        RtlHook event = RtlHook::kUndefined;
         uint32_t hart_id = 0;
         uint32_t rob_id = 0;
         uint32_t load_dest_reg = 0;

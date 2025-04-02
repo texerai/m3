@@ -16,14 +16,14 @@
 
 namespace m3
 {
-    AddAddress::AddAddress(const RTLEventData& data)
+    AddAddress::AddAddress(const RtlHookData& data)
     {
         data_ = data;
     }
 
     bool AddAddress::Execute(State& state)
     {
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
         M3Cores& m3cores = state.m3cores;
 
         // Should be created by this time.
@@ -86,7 +86,7 @@ namespace m3
     {
         bool ret = Execute(state);
 
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
         MemopInfo& memop_info = state.in_core_memops[d.hart_id][d.rob_id];
 
         if (memop_info.CanBePerformed())

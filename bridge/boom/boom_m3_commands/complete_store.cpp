@@ -12,7 +12,7 @@
 
 namespace m3
 {
-    CompleteStore::CompleteStore(const RTLEventData& data)
+    CompleteStore::CompleteStore(const RtlHookData& data)
     {
         data_ = data;
         priority_ = 1;
@@ -20,7 +20,7 @@ namespace m3
 
     bool CompleteStore::Execute(State& state)
     {
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
         M3Cores& m3cores = state.m3cores;
         auto& beyond_core_stores = state.beyond_core_stores;
 

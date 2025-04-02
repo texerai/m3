@@ -20,11 +20,11 @@ namespace m3
     public:
         virtual bool Execute(State& state) = 0;
         virtual bool Execute(State& state, Tracer& m3tracer) = 0;
-        RTLEventData GetData() const { return data_; }
+        RtlHookData GetData() const { return data_; }
         uint32_t GetPriority() const { return priority_; }
 
     protected:
-        RTLEventData data_;
+        RtlHookData data_;
         uint32_t priority_ = 0;
     };
 }

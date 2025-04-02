@@ -18,7 +18,7 @@ namespace m3
 {
     static const uint32_t kMesiMState = 3;
 
-    UpdateCachelineData::UpdateCachelineData(const RTLEventData& data)
+    UpdateCachelineData::UpdateCachelineData(const RtlHookData& data)
     {
         data_ = data;
     }
@@ -28,7 +28,7 @@ namespace m3
         M3Cores& m3cores = state.m3cores;
         Cache& cache = state.cache;
         auto& beyond_core_stores = state.beyond_core_stores;
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
 
         uint32_t cache_line_id = d.address >> 6;
         auto& cache_line = cache.banks[d.way_id][d.cache_line_id];

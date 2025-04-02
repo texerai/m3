@@ -16,14 +16,14 @@
 
 namespace m3
 {
-    AddStoreData::AddStoreData(const RTLEventData& data)
+    AddStoreData::AddStoreData(const RtlHookData& data)
     {
         data_ = data;
     }
 
     bool AddStoreData::Execute(State& state)
     {
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
         M3Cores& m3cores = state.m3cores;
 
         // Get the M3 entry based on ROB ID.
@@ -54,7 +54,7 @@ namespace m3
     {
         bool ret = Execute(state);
 
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
         MemopInfo& memop_info = state.in_core_memops[d.hart_id][d.rob_id];
 
         if (memop_info.CanBePerformed())

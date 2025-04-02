@@ -12,14 +12,14 @@
 
 namespace m3
 {
-    CreateMemop::CreateMemop(const RTLEventData& data)
+    CreateMemop::CreateMemop(const RtlHookData& data)
     {
         data_ = data;
     }
 
     bool CreateMemop::Execute(State& state)
     {
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
         M3Cores& m3cores = state.m3cores;
 
         // Get the entry.
@@ -49,7 +49,7 @@ namespace m3
     {
         bool ret = Execute(state);
 
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
         MemopInfo& memop_info = state.in_core_memops[d.hart_id][d.rob_id];
         m3tracer.RecordEvent(m3::MemoryEvent::kMemopCreated, d.hart_id, 0, 0, 0,
             static_cast<uint64_t>(memop_info.m3id),

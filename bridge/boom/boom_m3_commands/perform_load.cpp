@@ -16,14 +16,14 @@
 
 namespace m3
 {
-    PerformLoad::PerformLoad(const RTLEventData& data)
+    PerformLoad::PerformLoad(const RtlHookData& data)
     {
         data_ = data;
     }
 
     bool PerformLoad::Execute(State& state)
     {
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
         M3Cores& m3cores = state.m3cores;
 
         // Get memop info based on ROB ID.
@@ -63,7 +63,7 @@ namespace m3
     {
         bool is_success = Execute(state);
 
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
         MemopInfo& memop_info = state.in_core_memops[d.hart_id][d.rob_id];
 
         // Trace for debugging purposes.

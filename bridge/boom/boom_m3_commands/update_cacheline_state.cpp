@@ -18,7 +18,7 @@ namespace m3
 {
     static const uint32_t kMesiMState = 3;
 
-    UpdateCachelineState::UpdateCachelineState(const RTLEventData& data)
+    UpdateCachelineState::UpdateCachelineState(const RtlHookData& data)
     {
         data_ = data;
     }
@@ -30,7 +30,7 @@ namespace m3
         M3Cores& m3cores = state.m3cores;
         Cache& cache = state.cache;
         auto& beyond_core_stores = state.beyond_core_stores;
-        RTLEventData& d = data_;
+        RtlHookData& d = data_;
 
         cache.UpdateMetaData(d.way_id, d.cache_line_id, d.coherence_state, d.tag);
 
