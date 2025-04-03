@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include "test_trace_reader.h"
+#include "trace_parser.h"
 
 // Helper function to print the raw data of an RTLEventData instance.
 void printRawEventData(const m3::RTLEventData& data, const std::string& label) {

@@ -1,4 +1,4 @@
-#include "test_trace_reader.h"
+#include "trace_parser.h"
 
 #include <fstream>
 #include <iostream>

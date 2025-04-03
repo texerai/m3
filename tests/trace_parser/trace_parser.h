@@ -1,5 +1,5 @@
-#ifndef TEST_TRACE_READER_H_
-#define TEST_TRACE_READER_H_
+#ifndef TRACE_PARSER_H_
+#define TRACE_PARSER_H_
 
 #include <stdexcept>
 #include <string>
@@ -28,4 +28,4 @@ private:
 
 }
 
-#endif // TEST_TRACE_READER_H_
+#endif // TRACE_PARSER_H_
