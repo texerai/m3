@@ -2,6 +2,10 @@
  * Copyright (c) 2021 Micro Architecture Santa Cruz, UCSC. All rights reserved.
  */
 
+//
+// DEPRICATED, USED FOR REFERENCE.
+//
+
 // C++ libraries.
 #include <iomanip>
 #include <iostream>
