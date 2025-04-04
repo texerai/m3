@@ -25,6 +25,9 @@ namespace m3
         kUpdateCacheLineData
     };
 
+    // Hooks can be triggered at the same clock cycle.
+    // Prioritize the hooks. The bridge function of the hook
+    // with higher priority will execute first.
     static std::map<RtlHook, uint32_t> kRtlHookPriority = {
         { RtlHook::kCreateMemop, 0 },
         { RtlHook::kAddMemopAddress, 0 },
@@ -36,7 +39,8 @@ namespace m3
         { RtlHook::kUpdateCacheLineData, 0 }
     };
 
-    // Data that is passed from the RTL to the M3 model.
+    // Data that is passed from the RTL to the M3 model when
+    // the hook is triggered.
     struct RtlHookData
     {
         RtlHook event = RtlHook::kUndefined;
@@ -55,6 +59,12 @@ namespace m3
         uint32_t way_id = 0;
         uint32_t cache_line_id = 0;
         uint64_t tag = 0;
+
+        // Debugging signals, used for assertions
+        // and double checking.
+        bool is_load = false;
+        bool is_store = false;
+        bool is_amo = false;
     };
 }
 #endif

@@ -16,6 +16,8 @@ namespace m3
 {
     using M3Cores = std::vector<MemoryMarionette>;
 
+    const uint32_t kBoomMesiStateValue = 0x3;
+
     // Structures to keep track of memory operation.
     enum class MemopFormat
     {
