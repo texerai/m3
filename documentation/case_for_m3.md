@@ -14,3 +14,8 @@ Now, let's consider a simple but specific example to demonstrate how interaction
 ![2](https://github.com/user-attachments/assets/987c6a9a-581a-4039-b567-04a35ad3c0af)
 
 The specific timing values are arbitrary and not important—what matters is that the events happen in increasing time order, reflecting the natural flow of operations through the system.
+
+### Add load 1
+At time 1, In the RTL, load instruction is enqueued into ROB. We are communicating this event to our model and registering this assigning ID=1 to this memory operation.
+
+![3](https://github.com/user-attachments/assets/2256d09c-eb44-4be3-84db-bc31f3e3e61c)
