@@ -20,7 +20,6 @@ add_library(m3 STATIC ${M3_SOURCES})
 
 # Add include directories
 target_include_directories(m3 PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/source
 )
 
