@@ -143,7 +143,8 @@ void MemoryMarionette::st_locally_perform(Inst_id iid) {
         if (!rob_it->performed)
             continue;
 
-        auto ld_data_copy = ld_perform(rob_it->rid);  // perform again
+        auto ld_data_copy = rob_it->ld_data;
+        ld_perform(rob_it->rid);  // perform again
         if (ld_data_copy != rob_it->ld_data) {
             std::cout << "WARNING: ld id:" << rob_it->rid << " performed but data changed\n";
             rob_it->error = "store id:" + std::to_string(iid) + " changed value";
