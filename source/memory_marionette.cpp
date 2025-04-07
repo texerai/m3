@@ -1,5 +1,4 @@
 #include "memory_marionette.hpp"
-#include "notifier.hpp"
 #include <cstdio>
 #include <cassert>
 
@@ -40,8 +39,8 @@ void MemoryMarionette::set_safe(Inst_id iid) {
 
 void MemoryMarionette::nuke(Inst_id iid) {
     if (iid < pnr) {
+        // FIXME: Notifier::fail("nuke id:{} for already safe pnr:{}", iid, pnr);
         dump();
-        Notifier::fail("nuke id:{} for already safe pnr:{}", iid, pnr);
         return;
     }
 
@@ -105,7 +104,7 @@ const Data &MemoryMarionette::ld_perform(Inst_id iid) {
             if (it->st_data.has_data() && it->performed) {
                 bool is_updated = ent.ld_data.update_newer(it->st_data);
                 if (is_updated) {
-                    Notifier::info("ld iid:{} fwd from st iid:{}", iid, it->rid);
+                    //FIXME: Notifier::info("ld iid:{} fwd from st iid:{}", iid, it->rid);
                 }
             }
         }
@@ -114,7 +113,7 @@ const Data &MemoryMarionette::ld_perform(Inst_id iid) {
     ent.performed = true;
     ent.error.clear();
 
-    Notifier::trace(iid, "core:{} ld gp{}", cid, ent.ld_data.str());
+    //FIXME:: Notifier::trace(iid, "core:{} ld gp{}", cid, ent.ld_data.str());
 
     return ent.ld_data;
 }
@@ -133,7 +132,7 @@ void MemoryMarionette::st_locally_perform(Inst_id iid) {
     Rob_queue::reverse_iterator rob_it;
     rob_it = std::find_if(rob.rbegin(), rob.rend(), [&iid](const Rob_entry &x) { return x.rid == iid; });
 
-    Notifier::trace(iid, "core:{} st lp{}", cid, rob_it->st_data.str());
+    //FIXME: Notifier::trace(iid, "core:{} st lp{}", cid, rob_it->st_data.str());
 
     ++rob_it;  // Skip itself
 
@@ -239,7 +238,7 @@ void MemoryMarionette::st_globally_perform(Inst_id iid) {
     st_locally_perform(iid);  // even if performed, we can check again (just in
                               // case missing API call)
 
-    Notifier::trace(iid, "core:{} st gp{}", cid, rob_it1->st_data.str());
+    //FIXME: Notifier::trace(iid, "core:{} st gp{}", cid, rob_it1->st_data.str());
 
     mem.st_perform(rob_it1->st_data);
 
