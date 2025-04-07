@@ -35,4 +35,33 @@ At time 11, in the RTL, another load instruction is enqueued into ROB in-order. 
 
 ![6](https://github.com/user-attachments/assets/bf1254b1-845f-4d63-8bdf-9ea30d7e015b)
 
+### (5) Perform the load ID 1
+At time 20, we received a signal from the RTL that the data for load ID 1 became available. The data was brought to pipeline. We are communicating this event to our model and registering the data. The load ID 1 can be now performed.
+
+> [!NOTE]
+> This is the moment where we call `MemoryMarionette::ld_perform(Inst_id iid)` function. Internally this function checks the value that was brought from RTL against what has been tracked by the model. If the data doesn't match, we flag this failure. 
+
+![7](https://github.com/user-attachments/assets/e3b7a10e-cecd-4011-827c-7409f6934f8a)
+
+### (6) Add address to load ID 3
+At time 31, the RTL calculated the address and size for the load with ID 3. This address was added to Load Queue Entry. This event is communicated to the model.
+
+![8](https://github.com/user-attachments/assets/ce9f87e8-eec7-46a1-9834-7f0f95beb221)
+
+### (7) Perform the load ID 3
+In a few cycles, at time 33, the data becomes available at the RTL. The data was brought to pipeline. We are communicating this event to our model and registering the data. The load ID 3 can be now performed.
+
+> [!IMPORTANT]
+> Note that something fishy is happening. We brought the data for load ID 3, but there is an older store to the same address region which has not been performed yet! This means we are bringing the data out-of-program order. This being the said, m3 doesn't check ordering at load_perform due to performance optimizations. This will be checked at store perform.
+
+![9](https://github.com/user-attachments/assets/bda9343d-3ed0-444d-9b08-826fe89b4f9b)
+
+### (8) Perform locally the store ID 2
+At time 41, the store ID 2 information becomes available in the RTL. It get's communicated. If the processor implements the forwarding between load and stores, the data of this store should be visible locally. Therefore we call m3's `st_locally_perform` API. 
+
+> [!IMPORTANT]
+> `st_locally_perform` API checks the ordering restrictions. At time 41, the API will walk through younger loads and see if any of them has been performed. The performance of the younger load before older store is not permissive, so this triggers a warning message or could be configured to halt the simulation.
+
+![10](https://github.com/user-attachments/assets/24869151-b8f2-40a6-975b-eda781cf4f39)
+
 
