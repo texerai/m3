@@ -46,8 +46,8 @@ namespace m3
         RtlHook event = RtlHook::kUndefined;
         uint32_t hart_id = 0;
         uint32_t rob_id = 0;
-        uint32_t load_dest_reg = 0;
         uint32_t memop_size = 0;
+        uint32_t rv_instruction = 0;
         uint64_t address = 0;
         uint32_t memop_id = 0;
         uint64_t load_rtl_data = 0;

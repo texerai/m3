@@ -21,6 +21,12 @@
 // to allow Memory class manipulate.
 static Memory mem;
 
+// External function defined in the processor model
+// which allows updating register values.
+// For exmple void dromajo_update_register(uint32_t hart_id,
+// uint32_t destination_reg, uint64_t write_data, bool is_fp_register);
+static std::function<void(uint32_t, uint32_t, uint64_t, bool)> UpdateProcessorRegister;
+
 namespace m3
 {
     // Debugging.
@@ -62,7 +68,7 @@ namespace m3
             memop_info.is_just_created = false;
             memop_info.m3id = m3cores[data.hart_id].inorder();
             memop_info.rob_id = data.rob_id;
-            memop_info.load_dest_reg = data.load_dest_reg;
+            memop_info.load_dest_reg = RVUtils::get_destination_from_load(data.rv_instruction);
             // Define memop type: store, load, amo, etc.
 
             return true;
@@ -128,7 +134,7 @@ namespace m3
                 {
                     bool is_fp = memop_info.load_dest_reg > 31;
                     uint32_t rd = memop_info.load_dest_reg % 32;
-                    // (data.hart_id, rd, memop_info.load_rtl_data, is_fp);
+                    UpdateProcessorRegister(data.hart_id, rd, memop_info.load_rtl_data, is_fp);
                 }
                 else
                 {
@@ -357,12 +363,6 @@ namespace m3
         // This is to support triggered hooks at the same
         // clock cycle.
         std::vector<RtlHookData> rtl_hook_data;
-
-        // External function defined in the processor model
-        // which allows updating register values.
-        // For exmple void dromajo_update_register(uint32_t hart_id,
-        // uint32_t destination_reg, uint64_t write_data, bool is_fp_register);
-        std::function<void(uint32_t, uint32_t, uint64_t, bool)> UpdateProcessorRegister;
     };
 
     void BridgeBoom::Init(uint32_t ncores)
@@ -417,6 +417,6 @@ namespace m3
 
     void BridgeBoom::SetCallbackUpdateReg(std::function<void(uint32_t, uint32_t, uint64_t, bool)> update_proc_register)
     {
-        pimpl_->UpdateProcessorRegister = update_proc_register;
+        UpdateProcessorRegister = update_proc_register;
     }
 }

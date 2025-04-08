@@ -8,7 +8,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add test executables
 add_executable(core_test core_test.cpp)
 add_executable(data_test data_test.cpp)
-add_executable(bridge_boom_test bridge_boom_test.cpp)
+add_executable(bridge_boom_test
+    bridge_boom_test.cpp
+    ${CMAKE_SOURCE_DIR}/bridge/bridge_boom/bridge_boom.cpp
+)
 
 # Link with the main project library
 target_link_libraries(core_test PRIVATE m3)
