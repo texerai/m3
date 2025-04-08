@@ -47,10 +47,9 @@ Key features:
 - Provides byte-level memory access
 - Handles memory initialization
 - Manages memory state through a hash map
-- Maintains memory consistency
 
 > [!IMPORTANT]
-> The Memory class does not allocate its own memory space. Instead, it uses a callback mechanism to connect to the allocated memory of the Processor Golden Model (e.g. Spike or Dromajo), allowing it to verify memory operations against the actual processor model's memory state.
+> The `Memory` class requires a callback function to be set. This callback connects to the allocated memory of the Processor Golden Model (e.g., Spike or Dromajo). On the first access to a memory location, the data is fetched from the Processor Golden Model's memory. Subsequent loads and stores access the unordered_map maintained by this class. This mechanism ensures that the memories are automatically synchronized at the beginning of the simulation.
 
 To integrate M3 with a processor model (like Dromajo or Spike), you need to define a memory access function in your processor model that returns individual bytes:
 

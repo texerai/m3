@@ -6,12 +6,9 @@
 #define BRIDGE_BOOM_T_H_
 
 // C++ libraries.
-#include <memory>
+#include <functional>
 #include <stdint.h>
 #include <string>
-
-// Forward declarations.
-class dromajo_t;
 
 namespace m3
 {
@@ -25,6 +22,10 @@ namespace m3
         void RegisterEvent(const RtlHookData& data);
         bool ServeRegisteredEvents();
         void Close();
+
+        // Required callbacks.
+        void SetCallbackGetByte(std::function<uint8_t(uint64_t)> get_byte_function);
+        void SetCallbackUpdateReg(std::function<void(uint32_t, uint32_t, uint64_t, bool)> update_proc_register);
 
     private:
         struct BridgeBoomImpl;
