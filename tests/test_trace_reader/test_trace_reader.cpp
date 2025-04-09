@@ -47,9 +47,9 @@ namespace m3
             {
                 currentHookData.rob_id = std::stoul(value);
             }
-            else if (key == "load_dest_reg")
+            else if (key == "rv_instruction")
             {
-                currentHookData.load_dest_reg = std::stoul(value);
+                currentHookData.rv_instruction = std::stoul(value);
             }
             else if (key == "memop_size")
             {
