@@ -138,5 +138,64 @@ The following additional information needs to be passed from RTL:
 
 As usual, the `hart_id` and `rob_id` are used to retrieve the corresponding m3 ID. After getting this ID, the store data is added to the memory operation in m3. When both the store's address **AND** data are available, we can invoke `st_locally_perform(Inst_id iid)`
 
-### `st_globally_perform(Inst_id iid)`
-This function is triggered when the store is globally visible to other harts. In practice, this means the memory system has accepted the store and coherence conditions (e.g., MESI states) are satisfied. The corresponding hooks are `UpdateCacheLineState` or `UpdateCacheLineData`, depending on which final transition occurs.
+### `st_globally_perform(Inst_id iid)` API
+This function is triggered when the store becomes globally visible to other harts. Global visibility in this context means that the memory system has accepted the store, and all necessary coherence conditions are satisfied. In BOOM's case, cacheline state transitioned to `M` state in the context of MESI protocol. From the m3's perspective, if cacheline is in `M` state, the data must be seen by all the cores in the system. The RTL state transition tracking requires the definition of RTL hooks such as `UpdateCacheLineState` and `UpdateCacheLineData`.
+
+In BOOM, the change of the cacheline mean that the store has already committed. Once an instruction commits, its ROB entry is deallocated, making it impossible to track the store further using only the ROB ID. To handle this, the Bridge must transfer tracking responsibility to a separate object that persists beyond ROB deallocation — typically by recording the store’s metadata in a `beyond_core_stores` structure. This requires the definition of additional RTL Hook: `CommitMemop`.
+
+#### 1) `UpdateCacheLineState` RTL Hook
+
+The exact RTL condition for `UpdateCacheLineState` hook:
+```
+tile_reset_domain_boom_tile.dcache.metaWriteArb.io_out_valid
+```
+
+The following additional information needs to be passed from the RTL:
+```
+| Hierarchy                                                                                  | Port Size |
+|---------------------------------------------------------------------------------------------|-----------|
+| tile_reset_domain_boom_tile.core.io_hartid                                                  | 1         |
+| tile_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_way_en                          | 4         |
+| tile_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_idx                             | 6         |
+| tile_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_data_coh_state                  | 2         |
+| tile_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_data_tag                        | 20        |
+```
+Once the store leaves the core, the primary metadata used to retrieve the corresponding M3 ID is the store’s address. The signals listed above are used to reconstruct this address in order to perform the lookup.
+
+#### 2) `UpdateCacheLineData` RTL Hook
+
+The exact RTL condition for `UpdateCachelineData` hook:
+```
+tile_reset_domain_boom_tile.dcache.dataWriteArb.io_out_valid
+```
+
+The following additional information needs to be passed from the RTL:
+
+```
+| Hierarchy                                                                                  | Port Size |
+|---------------------------------------------------------------------------------------------|-----------|
+| tile_reset_domain_boom_tile.core.io_hartid                                                  | 1         |
+| tile_reset_domain_boom_tile.dcache.dataWriteArb.io_out_bits_way_en                          | 4         |
+| tile_reset_domain_boom_tile.dcache.dataWriteArb.io_out_bits_addr                            | 12        |
+```
+Once the store leaves the core, the primary metadata used to retrieve the corresponding M3 ID is the store’s address. The signals listed above are used to reconstruct this address in order to perform the lookup.
+
+#### 3) `CommitMemop` RTL Hook
+
+The exact RTL condition for `CommitMemop` hook:
+```
+tile_reset_domain_boom_tile.core.rob.(io_commit_valids_0&(io_commit_uops_0_uses_ldq|io_commit_uops_0_uses_stq))
+```
+
+The following additional information needs to be passed from the RTL:
+```
+| Hierarchy                                                              | Port Size |
+|------------------------------------------------------------------------|-----------|
+| tile_reset_domain_boom_tile.core.io_hartid                             | 1         |
+| tile_reset_domain_boom_tile.core.rob.com_idx                           | 5         |
+```
+
+These signals are used to retrieve the M3 ID. For store operations, the M3 ID is transferred from the ROB ID to the address once the store leaves the core.
+
+> [!IMPORTANT]
+> For load memops, we check whether the value comparison passed during the ld_perform stage. If the check is successful, we update the corresponding register in the "Processor" golden model using a callback function defined in the Bridge.
