@@ -34,7 +34,7 @@ To decouple these microarchitectural steps from m3's abstract semantics, we appl
 
 ## Delivery of Core m3 API Calls via RTL Hooks
 
-To integrate the M3 library into a dual-core Small BOOM configuration, we define RTL hooks that correspond to the semantic memory operations tracked by M3. The Bridge is responsible for mapping these hooks to the appropriate M3 core API, maintaining internal state, and determining when an m3 API call should be triggered.
+To integrate the m3 library into a dual-core Small BOOM configuration, we define several RTL hooks. The `BoomBridge` class is responsible for mapping these hooks to the appropriate m3 core API, maintaining internal state, and determining when an m3 API call should be triggered.
 
 ### `inorder()` API
 This API assigns an in-order ID to a memory instruction so that it can be uniquely tracked by the verification infrastructure. The ID must reflect the program order, which is essential for ensuring memory consistency and detecting out-of-order violations. The correct place to invoke this API is at the moment when an instruction is allocated into the Reorder Buffer (ROB) in BOOM, provided that the instruction is a memory operation (load, store, or AMO). We named this RTL hook `CreateMemop` and it is responsible for detecting this condition. This marks the instruction's entry into m3's tracking system.
@@ -97,8 +97,46 @@ As usual, the `hart_id` and `rob_id` are used to retrieve the corresponding m3 I
 > [!IMPORTANT]
 > If the comparison fails, we do not halt the simulation immediately, unlike traditional single-core co-simulation scenarios. In this case, the load value is being checked while still in the pipeline, and it may belong to a mispredicted path. Therefore, we simply mark this memop in the Bridge's state object as having failed the comparison. The simulation is only halted if and when this load instruction commits, confirming that the incorrect value would have affected architecturally visible state.
 
-### `st_locally_perform(Inst_id iid)`
-This function is used when both the store's address and data are available in the RTL. It depends on two RTL hooks: `AddAddress` and `AddStoreData`. The Bridge waits until both conditions are satisfied before calling `st_locally_perform()`. This marks the store as ready for forwarding to subsequent loads.
+### `st_locally_perform(Inst_id iid)` API
+This function is used when both the store's address **AND** data are available in the RTL. It depends on two RTL hooks: `AddAddress` and `AddStoreData`. The Bridge waits until both conditions are satisfied before calling `st_locally_perform()`. Invoking this API indicates that the store is now locally visible — meaning that subsequent loads issued by the same core can see data from this store, even if it hasn't committed yet. 
+
+This behavior is consistent with how BOOM implements its store-to-load forwarding mechanism: as long as the store queue contains a valid address and data for a pending store, subsequent loads can read from it. Therefore, reaching these two conditions (address and data availability) is sufficient to mark the store as locally performed and ready for potential forwarding.
+
+#### 1) `AddAddress` RTL Hook
+Very similar to `AddAddress` from loads, the exact RTL condition for `AddAddress` hook for stores:
+```
+tile_reset_domain_boom_tile.lsu.stq_X_bits_addr_valid
+```
+
+The following additional information needs to be passed from RTL:
+```
+| Hierarchy                                                              | Port Size |
+|------------------------------------------------------------------------|-----------|
+| tile_reset_domain_boom_tile.core.io_hartid                             | 1         |
+| tile_reset_domain_boom_tile.lsu.stq_X_bits_addr_bits                   | 40        |
+| tile_reset_domain_boom_tile.lsu.stq_X_bits_uop_mem_size                | 2         |
+| tile_reset_domain_boom_tile.lsu.stq_X_bits_uop_rob_idx                 | 5         |
+| tile_reset_domain_boom_tile.lsu.(X)                                    | 3         |
+```
+
+The `X` in the signal name represents the index of an entry in the Store Queue (STQ). In a small BOOM configuration, there are 8 STQ entries. The address-related signals are triggered when any of the corresponding `addr_valid` bits go high. The underlying logic is that when an entry's address becomes available in the RTL, we want to capture this moment in the m3 tracking system. At this point, we also provide additional metadata—such as the `hartid` and `rob_id`—which allows us to retrieve the corresponding m3 ID. Using this ID, we then update the memory operation in m3 with the address and memory operation size.
+
+#### 2) `AddStoreData` RTL Hook
+The exact RTL condition for `AddStoreData` hook for stores:
+```
+tile_reset_domain_boom_tile.lsu.stq_X_bits_data_valid
+```
+
+The following additional information needs to be passed from RTL:
+```
+| Hierarchy                                                              | Port Size |
+|------------------------------------------------------------------------|-----------|
+| tile_reset_domain_boom_tile.core.io_hartid                             | 1         |
+| tile_reset_domain_boom_tile.lsu.stq_X_bits_data_bits                   | 64        |
+| tile_reset_domain_boom_tile.lsu.stq_X_bits_uop_rob_idx                 | 5         |
+```
+
+As usual, the `hart_id` and `rob_id` are used to retrieve the corresponding m3 ID. After getting this ID, the store data is added to the memory operation in m3. When both the store's address **AND** data are available, we can invoke `st_locally_perform(Inst_id iid)`
 
 ### `st_globally_perform(Inst_id iid)`
 This function is triggered when the store is globally visible to other harts. In practice, this means the memory system has accepted the store and coherence conditions (e.g., MESI states) are satisfied. The corresponding hooks are `UpdateCacheLineState` or `UpdateCacheLineData`, depending on which final transition occurs.
