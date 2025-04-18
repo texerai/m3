@@ -1,10 +1,10 @@
-## Integrating the M3 Library into a Verification Infrastructure
+# Integrating the m3 Library into BOOM's Verification Infrastructure
 
-### Overview
+## Overview
 
-To enable memory consistency verification in modern out-of-order cores, the **M3 library** offers a high-level abstraction of memory subsystem behavior. Rather than tightly coupling the memory model to RTL implementation details, M3 defines a set of **abstract semantic events** that represent key points in memory operation execution. These events serve as an interface between the design under test (DUT) and the M3 checker.
+To enable the co-simulation of multi-core systems running shared programs, the **m3 library** offers a high-level abstraction of memory subsystem behavior. Rather than tightly coupling the memory model to RTL implementation details, m3 defines a set of **abstract semantic events** that represent key points in memory operation execution. These events serve as an interface between the design under test (DUT) and the m3.
 
-Without loss of generality, we begin with the assumption that M3 provides the following abstract memory behaviors:
+Without loss of generality, we begin with the core APIs that M3 provides:
 
 
 | Function                                    | Description        |
@@ -12,19 +12,53 @@ Without loss of generality, we begin with the assumption that M3 provides the fo
 | `Inst_id inorder()`                         | Gets the in-order ID for instructions through the pipeline.                                                  |
 | `const Data& ld_perform(Inst_id iid)`       | Invoked when a load is globally performed and the data is bound to the destination register.                 |
 | `void st_locally_perform(Inst_id iid)`      | Marks the point when store address and data become available locally. Enables forwarding to dependent loads. |
-| `void st_locally_merged(Inst_id iid1, iid2)`| Indicates that two store instructions targeting the same cache line are merged locally.                      |
 | `void st_globally_perform(Inst_id iid)`     | Signals that a store has been globally committed to memory and is visible to other harts.                   |
 
-These calls define the **contract between RTL and M3**, abstracting away microarchitectural implementation details such as load queues, store queues, and cache hierarchy.
-
+These calls define the **contract between RTL and m3**, abstracting away microarchitectural implementation details such as load queues, store queues, and cache hierarchy.
 
 ---
 
-### Using the Bridge Design Pattern
+## Using the Bridge Design Pattern
 
 In realistic RTL cores, the above abstract memory events do not correspond one-to-one with RTL signals. For example, for a single `ld_perform` to occur, the following might need to happen:
 - Load memop is in the ROB.
 - Load address is computed.
 - Load data becomes available.
 
-To decouple these microarchitectural steps from M3's abstract semantics, we apply a **Bridge design pattern**. This pattern allows the DUT to **send events** to M3 when specific RTL hooks are triggered, without requiring M3 to understand the internal pipeline structure.
+To decouple these microarchitectural steps from m3's abstract semantics, we apply a Bridge design pattern. In the Marionette model methodology, each of these RTL signals corresponds to a separate RTL hook — individual strings through which we "pull" memory operation events. The Bridge is responsible for tracking these triggers from the RTL, recording intermediate state, and defining the logic for when to invoke the core m3 library APIs. This pattern allows the DUT to send events to m3 without requiring m3 to understand the internal pipeline structure.
+
+---
+
+## Delivery of Core m3 API Calls via RTL Hooks
+
+To integrate the M3 library into a dual-core Small BOOM configuration, we define RTL hooks that correspond to the semantic memory operations tracked by M3. The Bridge is responsible for mapping these hooks to the appropriate M3 core API, maintaining internal state, and determining when an m3 API call should be triggered.
+
+### `inorder()` API
+This API assigns an in-order ID to a memory instruction so that it can be uniquely tracked by the verification infrastructure. The ID must reflect the program order, which is essential for ensuring memory consistency and detecting out-of-order violations. The correct place to invoke this API is at the moment when an instruction is allocated into the Reorder Buffer (ROB) in BOOM, provided that the instruction is a memory operation (load, store, or AMO). We named this RTL hook `CreateMemop` and it is responsible for detecting this condition. This marks the instruction's entry into m3's tracking system.
+
+The exact RTL condition in BOOM corresponding to this hook:
+```
+tile_reset_domain_boom_tile.core.rob.(io_enq_valids_0&(io_enq_uops_0_uses_ldq|io_enq_uops_0_uses_stq))
+```
+
+When `CreateMemop` pulls the string the following additional information needs to be passed:
+
+| Hierarchy                                                                 | Port Size |
+|---------------------------------------------------------------------------|-----------|
+| tile_reset_domain_boom_tile.core.io_hartid                                | 1         |
+| tile_reset_domain_boom_tile.core.rob.io_enq_uops_0_rob_idx                | 5         |
+| tile_reset_domain_boom_tile.core.rob.io_enq_uops_0_debug_inst             | 32        |
+
+The bridge then creates a memop in m3. BOOM has a debug wire going into the ROB for storing the opcode (`io_enq_uops_0_debug_inst`), which is handy — because by providing this information to the bridge, we can retrieve additional details such as whether the instruction is a store, load, or AMO, and mark the memop in m3 accordingly.
+
+> [!IMPORTANT]
+> Since the API can be called from different parts of the pipeline, we need a mechanism to map each memop event back to its corresponding M3 ID. The ROB ID is helpful here because it remains unique for an instruction while it's in flight. When a memop is created in M3, the bridge stores a mapping from ROB ID to M3 ID using a simple state object. Later, when another event occurs, the ROB ID is typically available, allowing us to retrieve the associated M3 ID.
+
+### `ld_perform(Inst_id iid)`
+This call is made when the RTL pipeline reports that a load has successfully completed and returned data. The corresponding RTL hook is `PerformLoad`. At this point, the Bridge compares the RTL-produced data with the model's prediction to detect mismatches.
+
+### `st_locally_perform(Inst_id iid)`
+This function is used when both the store's address and data are available in the RTL. It depends on two RTL hooks: `AddAddress` and `AddStoreData`. The Bridge waits until both conditions are satisfied before calling `st_locally_perform()`. This marks the store as ready for forwarding to subsequent loads.
+
+### `st_globally_perform(Inst_id iid)`
+This function is triggered when the store is globally visible to other harts. In practice, this means the memory system has accepted the store and coherence conditions (e.g., MESI states) are satisfied. The corresponding hooks are `UpdateCacheLineState` or `UpdateCacheLineData`, depending on which final transition occurs.
