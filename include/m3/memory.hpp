@@ -4,8 +4,8 @@
 
 #include <algorithm>
 
-#include "data.hpp"
-#include "robin_hood.hpp"
+#include "m3/data.hpp"
+#include "third_party/robin_hood.hpp"
 
 class Memory {
     public:

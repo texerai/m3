@@ -1,5 +1,5 @@
-#include "memory.hpp"
-#include "memory_marionette.hpp"
+#include "m3/memory.hpp"
+#include "m3/memory_marionette.hpp"
 
 uint8_t get_byte(uint64_t addr) { return addr >> 4; }
 

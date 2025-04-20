@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "lrand.hpp"
+#include "third_party/lrand.hpp"
 
 class Data {
   public:
