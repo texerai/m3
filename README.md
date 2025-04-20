@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Memory Marionette Model (m3) is a library that leverage Marionette Model verification methodology.
+The Memory Marionette Model (m3) is a powerful verification library designed to expose subtle bugs in multicore memory subsystems. By implementing the Marionette Model methodology, m3 brings unmatched precision to memory operation tracking and validation—making it an essential tool for anyone serious about building reliable multicore processors.
 
 <img src="https://user-images.githubusercontent.com/8511359/168761545-07a34325-0b65-4f51-a6c4-99b379cc2194.png" width="150" style="float: left">
 
