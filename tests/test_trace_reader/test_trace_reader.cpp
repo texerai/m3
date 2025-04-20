@@ -21,7 +21,7 @@ namespace m3
     }
 
     // Static helper function to convert string names to appropriate types.
-    static RtlHook StringToRtlHook(const std::string& hookName)
+    static bool StringToRtlHook(const std::string& hookName, RtlHook& outHook, std::string& error_message)
     {
         static const std::map<std::string, RtlHook> kHookMap =
         {
@@ -35,12 +35,17 @@ namespace m3
             {"kUpdateCacheLineData", RtlHook::kUpdateCacheLineData}
         };
         auto it = kHookMap.find(hookName);
-        assert(it != kHookMap.end() && "Unknown hook name encountered");
-        return it->second;
+        if (it == kHookMap.end())
+        {
+            error_message = "Unknown hook name encountered: '" + hookName + "'";
+            return false;
+        }
+        outHook = it->second;
+        return true;
     }
 
     // Helper function to parse a single key-value line and update the hook data.
-    static void ParseHookLine(const std::string& line, RtlHookData& hookData)
+    static bool ParseHookLine(const std::string& line, int lineNumber, RtlHookData& hookData, std::string& error_message)
     {
         std::stringstream lineStream(line);
         std::string segment;
@@ -52,23 +57,38 @@ namespace m3
             {
                 continue;
             }
+
             size_t spacePos = segment.find(' ');
+            std::string key, value;
+
             if (spacePos == std::string::npos || spacePos == 0 || spacePos == segment.length() - 1)
             {
-                assert(false && "Malformed key-value segment found in trace line");
-                continue;
+                error_message = "Malformed key-value segment '" + segment +
+                                "' at line " + std::to_string(lineNumber);
+                return false;
             }
-            std::string key = Trim(segment.substr(0, spacePos));
-            std::string value = Trim(segment.substr(spacePos + 1));
+
+            key = Trim(segment.substr(0, spacePos));
+            value = Trim(segment.substr(spacePos + 1));
+
             if (key.empty() || value.empty())
             {
-                assert(false && "Empty key or value found in trace segment");
-                continue;
+                error_message = "Empty key or value in segment '" + segment +
+                                "' at line " + std::to_string(lineNumber);
+                return false;
             }
+
             bool keyProcessed = true;
             try
             {
-                if (key == "event") { hookData.event = StringToRtlHook(value); }
+                if (key == "event")
+                {
+                    if (!StringToRtlHook(value, hookData.event, error_message))
+                    {
+                        error_message += " at line " + std::to_string(lineNumber);
+                        return false;
+                    }
+                }
                 else if (key == "hart_id") { hookData.hart_id = std::stoul(value); }
                 else if (key == "rob_id") { hookData.rob_id = std::stoul(value); }
                 else if (key == "rv_instruction") { hookData.rv_instruction = std::stoll(value); }
@@ -84,18 +104,33 @@ namespace m3
                 else if (key == "tag") { hookData.tag = std::stoull(value); }
                 else if (key == "is_load")
                 {
-                    assert((value == "true" || value == "false") && "Invalid boolean value (expected 'true' or 'false')");
-                    hookData.is_load = (value == "true");
+                    if (value == "true") hookData.is_load = true;
+                    else if (value == "false") hookData.is_load = false;
+                    else
+                    {
+                        error_message = "Invalid boolean value '" + value + "' for key 'is_load' at line " + std::to_string(lineNumber);
+                        return false;
+                    }
                 }
                 else if (key == "is_store")
                 {
-                    assert((value == "true" || value == "false") && "Invalid boolean value (expected 'true' or 'false')");
-                    hookData.is_store = (value == "true");
+                    if (value == "true") hookData.is_store = true;
+                    else if (value == "false") hookData.is_store = false;
+                    else
+                    {
+                        error_message = "Invalid boolean value '" + value + "' for key 'is_store' at line " + std::to_string(lineNumber);
+                        return false;
+                    }
                 }
                 else if (key == "is_amo")
                 {
-                    assert((value == "true" || value == "false") && "Invalid boolean value (expected 'true' or 'false')");
-                    hookData.is_amo = (value == "true");
+                    if (value == "true") hookData.is_amo = true;
+                    else if (value == "false") hookData.is_amo = false;
+                    else
+                    {
+                        error_message = "Invalid boolean value '" + value + "' for key 'is_amo' at line " + std::to_string(lineNumber);
+                        return false;
+                    }
                 }
                 else
                 {
@@ -104,46 +139,76 @@ namespace m3
             }
             catch (const std::invalid_argument&)
             {
-                assert(false && "Invalid numeric or boolean format encountered");
-                continue;
+                error_message = "Invalid numeric format for value '" + value + "' with key '" + key +
+                                "' at line " + std::to_string(lineNumber);
+                return false;
             }
             catch (const std::out_of_range&)
             {
-                assert(false && "Numeric value out of range");
-                continue;
+                error_message = "Numeric value '" + value + "' out of range for key '" + key +
+                                "' at line " + std::to_string(lineNumber);
+                return false;
             }
-            catch (const std::runtime_error&)
+            catch (const std::runtime_error& e)
             {
-                assert(false && "Runtime error during string conversion helper");
-                continue;
+                error_message = "Runtime error processing key '" + key + "' at line " +
+                                std::to_string(lineNumber) + ": " + e.what();
+                return false;
             }
-            assert(keyProcessed && "Unknown key encountered in trace line");
+
+            if (!keyProcessed)
+            {
+                error_message = "Unknown key '" + key + "' encountered in segment '" + segment +
+                                "' at line " + std::to_string(lineNumber);
+                return false;
+            }
         }
-        assert(hookData.event != RtlHook::kUndefined && "Mandatory 'event' key missing or invalid on trace line");
+
+        if (hookData.event == RtlHook::kUndefined)
+        {
+             error_message = "Mandatory 'event' key missing or invalid on line " + std::to_string(lineNumber);
+             return false;
+        }
+
+        return true;
     }
 
     // Public Static Method Implementation.
-    std::vector<RtlHookData> TestTraceReader::ParseFile(const std::string& filename)
+    bool TestTraceReader::ParseFile(const std::string& filename, std::vector<RtlHookData>& hooks, std::string& error_message)
     {
         std::ifstream inputFile(filename);
-        assert(inputFile.is_open() && "Failed to open trace file");
+        if (!inputFile.is_open())
+        {
+            error_message = "Failed to open trace file: " + filename;
+            return false;
+        }
 
-        std::vector<RtlHookData> hooks;
+        hooks.clear();
         std::string line;
+        int lineNumber = 0;
 
         while (std::getline(inputFile, line))
         {
+            lineNumber++;
             line = Trim(line);
             if (line.empty())
             {
                 continue;
             }
+
             RtlHookData currentHookData{};
-            ParseHookLine(line, currentHookData);
+
+            if (!ParseHookLine(line, lineNumber, currentHookData, error_message))
+            {
+                inputFile.close();
+                return false;
+            }
+
             hooks.push_back(currentHookData);
         }
 
         inputFile.close();
-        return hooks;
+        error_message = "";
+        return true;
     }
-}
+} // namespace m3
