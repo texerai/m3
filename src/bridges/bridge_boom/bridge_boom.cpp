@@ -11,11 +11,11 @@
 #include <functional>
 
 // Local libraries.
-#include "memory.hpp"
 #include "rtl_hook.h"
-#include "rvutils.h"
 #include "state.h"
-#include "tracer.h"
+#include "m3/memory.hpp"
+#include "utils/rvutils.h"
+#include "utils/tracer.h"
 
 // External function defined in the processor model
 // to allow Memory class manipulate.

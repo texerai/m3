@@ -5,10 +5,10 @@
 #include <vector>
 #include <deque>
 
-#include "data.hpp"
-#include "memory.hpp"
-#include "robin_hood.hpp"
-#include "explicit_type.hpp"
+#include "m3/data.hpp"
+#include "m3/memory.hpp"
+#include "third_party/robin_hood.hpp"
+#include "utils/explicit_type.hpp"
 
 using Inst_id = Explicit_type<int, struct Inst_id_struct, 0>;
 

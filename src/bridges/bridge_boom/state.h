@@ -6,7 +6,7 @@
 #define STATE_H_
 
 // Local libraries.
-#include "memory_marionette.hpp"
+#include "m3/memory_marionette.hpp"
 
 // C++ libraries.
 #include <stdint.h>

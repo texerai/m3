@@ -2,7 +2,7 @@
  * Copyright (c) 2023 Micro Architecture Santa Cruz
  * and Texer.ai. All rights reserved.
  */
-#include "tracer.h"
+#include "utils/tracer.h"
 
 // C++ libraries.
 #include <cassert>

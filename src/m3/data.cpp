@@ -1,4 +1,4 @@
-#include "data.hpp"
+#include "m3/data.hpp"
 #include <cstdio>
 
 Lrand<uint8_t> Data::rand_data;
