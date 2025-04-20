@@ -39,9 +39,7 @@ namespace m3
     // priority in the model.
     static const uint32_t kMaxPriority = 1;
 
-    // Tracer.
-    static const uint32_t kTracerBufferSize = 1024;
-    static Tracer m3tracer;
+    // Global state.
     static State state;
 
     // Define bridge functions under this namespace.
@@ -68,8 +66,22 @@ namespace m3
             memop_info.is_just_created = false;
             memop_info.m3id = m3cores[data.hart_id].inorder();
             memop_info.rob_id = data.rob_id;
-            memop_info.load_dest_reg = RVUtils::get_destination_from_load(data.rv_instruction);
-            // Define memop type: store, load, amo, etc.
+            memop_info.instruction = data.rv_instruction;
+            memop_info.load_dest_reg = RVUtils::get_destination_from_load(data.rv_instruction);            
+
+            // Double check the memop type.
+            if (data.is_amo)
+            {
+                memop_info.memop_type = MemopType::kAmo;
+            }
+            else if (data.is_store)
+            {
+                memop_info.memop_type = MemopType::kStore;
+            }
+            else if (data.is_load)
+            {
+                memop_info.memop_type = MemopType::kLoad;
+            }
 
             return true;
         }
@@ -276,8 +288,8 @@ namespace m3
                 memop_info.check_failed = true;
                 std::cout << "Error: Load Perform Failed (iid: ";
                 std::cout << static_cast<uint32_t>(memop_info.m3id) << ")" << std::endl;
-                std::cout << "  DUT: " << rtl_data << ", Model: " << model_data;
-                std::cout << ", Address: " << memop_info.address << std::endl;
+                std::cout << "  DUT: " << std::hex << rtl_data << ", Model: " << model_data;
+                std::cout << ", Address: " << std::hex << memop_info.address << std::endl;
             }
 
             return is_success;
@@ -377,14 +389,10 @@ namespace m3
             }
 
             std::cout << "Goldmem Info: Goldmem initialized successfully." << std::endl;
-            m3tracer.Init(kTracerBufferSize);
         }
     }
 
-    void BridgeBoom::Close()
-    {
-        m3tracer.SaveTrace("m3trace.txt", m3::TraceFileFormat::kJson);
-    }
+    void BridgeBoom::Close() { }
 
     void BridgeBoom::RegisterEvent(const RtlHookData& data)
     {

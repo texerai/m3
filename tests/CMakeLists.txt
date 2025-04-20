@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(SourceTests)
 
 # Set C++ standard
+SET(BUILD_MODE Debug)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -9,7 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(core_test core_test.cpp)
 add_executable(data_test data_test.cpp)
 add_executable(bridge_boom_test
-    bridge_boom_test.cpp
+    ./bridge_boom_test.cpp
+    ./test_trace_reader/test_trace_reader.cpp
     ${CMAKE_SOURCE_DIR}/bridge/bridge_boom/bridge_boom.cpp
 )
 
