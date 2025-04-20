@@ -1,6 +1,8 @@
 #include "test_trace_reader.h"
 
+#include <algorithm>
 #include <cassert>
+#include <cctype>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -9,7 +11,16 @@
 
 namespace m3
 {
-    // Static helper functions to convert string names to appropriate types.
+    // Static helper function to trim leading/trailing whitespace.
+    static inline std::string Trim(const std::string& s)
+    {
+        auto wsfront = std::find_if_not(s.begin(), s.end(), [](int c){ return std::isspace(c); });
+        if (wsfront == s.end()) return "";
+        auto wsback = std::find_if_not(s.rbegin(), s.rend(), [](int c){ return std::isspace(c); }).base();
+        return std::string(wsfront, wsback);
+    }
+
+    // Static helper function to convert string names to appropriate types.
     static RtlHook StringToRtlHook(const std::string& hookName)
     {
         static const std::map<std::string, RtlHook> kHookMap =
@@ -24,185 +35,111 @@ namespace m3
             {"kUpdateCacheLineData", RtlHook::kUpdateCacheLineData}
         };
         auto it = kHookMap.find(hookName);
-        std::string errorMsg = "Unknown hook name: " + hookName;
-        assert(it != kHookMap.end() && errorMsg.c_str());
+        assert(it != kHookMap.end() && "Unknown hook name encountered");
         return it->second;
     }
 
     // Helper function to parse a single key-value line and update the hook data.
-    static void ParseLine(const std::string& key, const std::string& value,
-                                RtlHookData& currentHookData, int lineNumber)
+    static void ParseHookLine(const std::string& line, RtlHookData& hookData)
     {
-        try
+        std::stringstream lineStream(line);
+        std::string segment;
+
+        while (std::getline(lineStream, segment, ';'))
         {
-            if (key == "event")
+            segment = Trim(segment);
+            if (segment.empty())
             {
-                currentHookData.event = StringToRtlHook(value);
+                continue;
             }
-            else if (key == "hart_id")
+            size_t spacePos = segment.find(' ');
+            if (spacePos == std::string::npos || spacePos == 0 || spacePos == segment.length() - 1)
             {
-                currentHookData.hart_id = std::stoul(value);
+                assert(false && "Malformed key-value segment found in trace line");
+                continue;
             }
-            else if (key == "rob_id")
+            std::string key = Trim(segment.substr(0, spacePos));
+            std::string value = Trim(segment.substr(spacePos + 1));
+            if (key.empty() || value.empty())
             {
-                currentHookData.rob_id = std::stoul(value);
+                assert(false && "Empty key or value found in trace segment");
+                continue;
             }
-            else if (key == "rv_instruction")
+            bool keyProcessed = true;
+            try
             {
-                currentHookData.rv_instruction = std::stoul(value);
+                if (key == "event") { hookData.event = StringToRtlHook(value); }
+                else if (key == "hart_id") { hookData.hart_id = std::stoul(value); }
+                else if (key == "rob_id") { hookData.rob_id = std::stoul(value); }
+                else if (key == "rv_instruction") { hookData.rv_instruction = std::stoll(value); }
+                else if (key == "memop_size") { hookData.memop_size = std::stoul(value); }
+                else if (key == "address") { hookData.address = std::stoull(value); }
+                else if (key == "memop_id") { hookData.memop_id = std::stoul(value); }
+                else if (key == "load_rtl_data") { hookData.load_rtl_data = std::stoull(value); }
+                else if (key == "store_data") { hookData.store_data = std::stoull(value); }
+                else if (key == "timestamp") { hookData.timestamp = std::stoull(value); }
+                else if (key == "coherence_state") { hookData.coherence_state = std::stoul(value); }
+                else if (key == "way_id") { hookData.way_id = std::stoul(value); }
+                else if (key == "cache_line_id") { hookData.cache_line_id = std::stoul(value); }
+                else if (key == "tag") { hookData.tag = std::stoull(value); }
+                else if (key == "is_load")
+                {
+                    assert((value == "true" || value == "false") && "Invalid boolean value (expected 'true' or 'false')");
+                    hookData.is_load = (value == "true");
+                }
+                else if (key == "is_store")
+                {
+                    assert((value == "true" || value == "false") && "Invalid boolean value (expected 'true' or 'false')");
+                    hookData.is_store = (value == "true");
+                }
+                else if (key == "is_amo")
+                {
+                    assert((value == "true" || value == "false") && "Invalid boolean value (expected 'true' or 'false')");
+                    hookData.is_amo = (value == "true");
+                }
+                else
+                {
+                    keyProcessed = false;
+                }
             }
-            else if (key == "memop_size")
+            catch (const std::invalid_argument&)
             {
-                currentHookData.memop_size = std::stoul(value);
+                assert(false && "Invalid numeric or boolean format encountered");
+                continue;
             }
-            else if (key == "address")
+            catch (const std::out_of_range&)
             {
-                currentHookData.address = std::stoull(value);
+                assert(false && "Numeric value out of range");
+                continue;
             }
-            else if (key == "memop_id")
+            catch (const std::runtime_error&)
             {
-                currentHookData.memop_id = std::stoul(value);
+                assert(false && "Runtime error during string conversion helper");
+                continue;
             }
-            else if (key == "load_rtl_data")
-            {
-                currentHookData.load_rtl_data = std::stoull(value);
-            }
-            else if (key == "store_data")
-            {
-                currentHookData.store_data = std::stoull(value);
-            }
-            else if (key == "timestamp")
-            {
-                currentHookData.timestamp = std::stoull(value);
-            }
-            else if (key == "coherence_state")
-            {
-                currentHookData.coherence_state = std::stoul(value);
-            }
-            else if (key == "way_id")
-            {
-                currentHookData.way_id = std::stoul(value);
-            }
-            else if (key == "cache_line_id")
-            {
-                currentHookData.cache_line_id = std::stoul(value);
-            }
-            else if (key == "tag")
-            {
-                currentHookData.tag = std::stoull(value);
-            }
-            else if (key == "is_load")
-            {
-       	    currentHookData.is_load = true;
-            }
-            else if (key == "is_store")
-            {
-       	    currentHookData.is_store = true;
-            }
-            else if (key == "is_amo")
-            {
-       	    currentHookData.is_amo = true;
-            }
-            else
-            {
-                std::string errorMsg = "Unknown key '" + key + "' at line " + std::to_string(lineNumber);
-                assert(false && errorMsg.c_str());
-            }
+            assert(keyProcessed && "Unknown key encountered in trace line");
         }
-        catch (const std::invalid_argument&)
-        {
-            std::string errorMsg = "Invalid numeric value '" + value + "' for key '" + key +
-                                         "' at line " + std::to_string(lineNumber);
-            assert(false && errorMsg.c_str());
-        }
-        catch (const std::out_of_range&)
-        {
-            std::string errorMsg ="Numeric value '" + value + "' out of range for key '" +
-                                         key + "' at line " + std::to_string(lineNumber);
-            assert(false && errorMsg.c_str());
-        }
+        assert(hookData.event != RtlHook::kUndefined && "Mandatory 'event' key missing or invalid on trace line");
     }
 
     // Public Static Method Implementation.
     std::vector<RtlHookData> TestTraceReader::ParseFile(const std::string& filename)
     {
         std::ifstream inputFile(filename);
-        std::string errorMsg = "Could not open trace file: " + filename;
-        assert(inputFile.is_open() && errorMsg.c_str());
+        assert(inputFile.is_open() && "Failed to open trace file");
 
         std::vector<RtlHookData> hooks;
         std::string line;
-        RtlHookData currentHookData{}; // Initialize with default values.
-        bool inRecord = false;
-        int lineNumber = 0;
 
         while (std::getline(inputFile, line))
         {
-            lineNumber++;
-            // Trim leading/trailing whitespace.
-            line.erase(0, line.find_first_not_of(" \t\n\r\f\v"));
-            line.erase(line.find_last_not_of(" \t\n\r\f\v") + 1);
-
+            line = Trim(line);
             if (line.empty())
             {
-                // Blank line signifies the end of a record
-                if (inRecord)
-                {
-                    if (currentHookData.event != RtlHook::kUndefined)
-                    {
-                        hooks.push_back(currentHookData);
-                    }
-                    else
-                    {
-                        std::cerr << "Warning: Skipping potentially incomplete record ending before line " << lineNumber << std::endl;
-                    }
-                    currentHookData = RtlHookData{};
-                    inRecord = false;
-                }
                 continue;
             }
-
-            // Parse key-value pair
-            std::stringstream ss(line);
-            std::string key, value;
-            ss >> key >> value;
-            bool validFormat = !ss.fail();
-            std::string formatErrorMsg = "Invalid line format at line " + std::to_string(lineNumber) + ": '" + line + "'";
-            assert(validFormat && formatErrorMsg.c_str());
-
-            // Check for extra content on the line
-            std::string remaining;
-            if (std::getline(ss, remaining) && remaining.find_first_not_of(" \t") != std::string::npos)
-            {
-                std::string extraContentMsg = "Extra content after value in trace file at line " +
-                                        std::to_string(lineNumber) + ": '" + line + "'";
-                assert(false && extraContentMsg.c_str());
-            }
-
-            if (key == "event")
-            {
-                if (inRecord) {
-                    std::string eventErrorMsg = "Unexpected 'event' key found within a record at line " +
-                                        std::to_string(lineNumber) + ". Missing blank line?";
-                    assert(false && eventErrorMsg.c_str());
-                }
-                currentHookData.event = StringToRtlHook(value);
-                inRecord = true;
-            }
-            else if (inRecord)
-            {
-                ParseLine(key, value, currentHookData, lineNumber);
-            }
-            else
-            {
-                std::string orphanMsg = "Orphan key-value pair found outside an hook record at line " +
-                                        std::to_string(lineNumber) + ": '" + line + "'";
-                assert(false && orphanMsg.c_str());
-            }
-        }
-
-        if (inRecord && currentHookData.event != RtlHook::kUndefined)
-        {
+            RtlHookData currentHookData{};
+            ParseHookLine(line, currentHookData);
             hooks.push_back(currentHookData);
         }
 
