@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 
 #include "test_trace_reader.h"
 
@@ -30,40 +31,43 @@ void printRawHookData(const m3::RtlHookData& data, const std::string& label)
 
 int main()
 {
-    try
-    {
-        std::vector<m3::RtlHookData> parsedHooks = m3::TestTraceReader::ParseFile("m3_events.txt");
-        std::cout << "Successfully parsed " << parsedHooks.size() << " hooks." << std::endl;
+    std::vector<m3::RtlHookData> parsedHooks;
+    std::string errorMessage;
 
-        size_t n = parsedHooks.size();
+    bool success = m3::TestTraceReader::ParseFile("m3_events.txt", parsedHooks, errorMessage);
 
-        // Output Raw Data for Last 3 Elements.
-        if (n == 0)
-        {
-             std::cout << "\nNo hooks parsed to display." << std::endl;
-        }
-        else
-        {
-            std::cout << "\n--- Raw Hook Data (Last up to 3) ---" << std::endl;
-            if (n >= 3)
-            {
-                printRawHookData(parsedHooks[n - 3], "Third-to-Last Hook (Index " + std::to_string(n - 3) + ")");
-            }
-            if (n >= 2)
-            {
-                printRawHookData(parsedHooks[n - 2], "Second-to-Last Hook (Index " + std::to_string(n - 2) + ")");
-            }
-            printRawHookData(parsedHooks[n - 1], "Last Hook (Index " + std::to_string(n - 1) + ")");
-            if (n < 3)
-            {
-                std::cout << "\n(Displayed fewer than 3 hooks as only " << n << " were parsed)" << std::endl;
-            }
-        }
-    }
-    catch (const std::runtime_error& e)
+    if (!success)
     {
-        std::cerr << "Error parsing file: " << e.what() << std::endl;
+        std::cerr << "Error parsing file: " << errorMessage << std::endl;
         return 1;
     }
+
+    std::cout << "Successfully parsed " << parsedHooks.size() << " hooks." << std::endl;
+
+    size_t n = parsedHooks.size();
+
+    if (n == 0)
+    {
+         std::cout << "\nNo hooks parsed to display." << std::endl;
+    }
+    else
+    {
+        std::cout << "\n--- Raw Hook Data (Last up to 3) ---" << std::endl;
+        if (n >= 3)
+        {
+            printRawHookData(parsedHooks[n - 3], "Third-to-Last Hook (Index " + std::to_string(n - 3) + ")");
+        }
+        if (n >= 2)
+        {
+            printRawHookData(parsedHooks[n - 2], "Second-to-Last Hook (Index " + std::to_string(n - 2) + ")");
+        }
+        printRawHookData(parsedHooks[n - 1], "Last Hook (Index " + std::to_string(n - 1) + ")");
+
+        if (n < 3)
+        {
+            std::cout << "\n(Displayed fewer than 3 hooks as only " << n << " were parsed)" << std::endl;
+        }
+    }
+
     return 0;
 }

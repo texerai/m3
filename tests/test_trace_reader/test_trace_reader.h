@@ -11,8 +11,8 @@ namespace m3
     class TestTraceReader
     {
     public:
-        // Parses the given file and returns a vector of RtlHookData objects.
-        static std::vector<RtlHookData> ParseFile(const std::string& filename);
+        // Parses the given trace file and populates a vector of RtlHookData.
+        static bool ParseFile(const std::string& filename, std::vector<RtlHookData>& hooks, std::string& error_message);
     };
 }
 
