@@ -6,7 +6,7 @@ The Memory Marionette Model (m3) is a powerful verification library designed to 
 
 <img src="https://user-images.githubusercontent.com/8511359/168761545-07a34325-0b65-4f51-a6c4-99b379cc2194.png" width="150" style="float: left">
 
-### Why use M3?
+### Why use m3?
 - Enable co-simulation of multicore systems running share memory programs
 - Verify correct memory behavior in multicore systems
 - Track and validate memory operation ordering
