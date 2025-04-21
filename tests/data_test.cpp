@@ -1,8 +1,8 @@
 #include "m3/data.hpp"
 
 int main() {
-    Data d1;
-    Data d2;
+    m3::Data d1;
+    m3::Data d2;
 
     d1.set_addr(33, 5);
 
@@ -38,7 +38,7 @@ int main() {
 
     d2.dump();
 
-    Data d3 = d1;
+    m3::Data d3 = d1;
     d3.add_newer(d2);
 
     d3.dump();

@@ -4,19 +4,19 @@
 uint8_t get_byte(uint64_t addr) { return addr >> 4; }
 
 int main() {
-    Memory mem(get_byte);
-    MemoryMarionette core(mem, 0);
+    m3::Memory mem(get_byte);
+    m3::MemoryMarionette core(mem, 0);
 
     auto oldest_ld = core.inorder();
 
-    core.set_type(oldest_ld, Mem_op::Load);
+    core.set_type(oldest_ld, m3::Mem_op::Load);
 
     auto &oldest_ld_data = core.ld_data_ref(oldest_ld);
     oldest_ld_data.add_addr(0x135);
 
     auto oldest_st = core.inorder();
 
-    core.set_type(oldest_st, Mem_op::Load);
+    core.set_type(oldest_st, m3::Mem_op::Load);
 
     auto bad_spec_ld = core.inorder();
 
