@@ -78,7 +78,9 @@ int main(int argc, char* argv[])
     bridge_boom.SetCallbackGetByte(GetByte);
     bridge_boom.SetCallbackUpdateReg(UpdateReg);
 
-    std::vector<m3::RtlHookData> rtl_hook_data = m3::TestTraceReader::ParseFile(arg);
+    std::vector<m3::RtlHookData> rtl_hook_data;
+    std::string errorMessage;
+    bool success = m3::TestTraceReader::ParseFile(arg, rtl_hook_data, errorMessage);
 
     // Talk to the m3.
     auto hook_data_iter = rtl_hook_data.begin();

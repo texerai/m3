@@ -20,7 +20,7 @@
 
 // External function defined in the processor model
 // to allow Memory class manipulate.
-static Memory mem;
+static m3::Memory mem;
 
 // External function defined in the processor model
 // which allows updating register values.
@@ -128,7 +128,7 @@ namespace m3
             assert(in_core_memops[data.hart_id].count(data.rob_id) > 0);
             MemopInfo& memop_info = in_core_memops[data.hart_id][data.rob_id];
             assert(memop_info.memop_type != MemopType::kUndefined);
-            Inst_id m3id = Inst_id(memop_info.m3id);
+            m3::Inst_id m3id = m3::Inst_id(memop_info.m3id);
 
             // Set this safe. Point of no return: instruction commited.
             // Stores are set safe not at commit, but when they succeed
@@ -194,7 +194,7 @@ namespace m3
             uint64_t byte_size = RVUtils::inst_size_to_byte_size(data.memop_size);
 
             // Get the reference.
-            Inst_id m3id = Inst_id(memop_info.m3id);
+            m3::Inst_id m3id = m3::Inst_id(memop_info.m3id);
             auto& d_load = m3cores[data.hart_id].ld_data_ref(m3id);
             auto& d_store = m3cores[data.hart_id].st_data_ref(m3id);
 
@@ -239,7 +239,7 @@ namespace m3
 
             // Get the M3 entry based on ROB ID.
             MemopInfo& memop_info = state.in_core_memops[data.hart_id][data.rob_id];
-            Inst_id m3id = Inst_id(memop_info.m3id);
+            m3::Inst_id m3id = m3::Inst_id(memop_info.m3id);
 
             // Skip if already set.
             if (!memop_info.is_data_valid)
@@ -268,7 +268,7 @@ namespace m3
             // Get memop info based on ROB ID.
             assert(state.in_core_memops[data.hart_id].count(data.rob_id) > 0);
             MemopInfo& memop_info = state.in_core_memops[data.hart_id][data.rob_id];
-            Inst_id m3id = Inst_id(memop_info.m3id);
+            m3::Inst_id m3id = m3::Inst_id(memop_info.m3id);
 
             // Perform the load.
             auto &d_load = m3cores[data.hart_id].ld_data_ref(m3id);
