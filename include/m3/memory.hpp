@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025 Micro Architecture Santa Cruz
+ * and Texer.ai. All rights reserved.
+ */
+
 #pragma once
 
 // TODO: the mem is byte (not efficient maybe line base?)

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025 Micro Architecture Santa Cruz
+ * and Texer.ai. All rights reserved.
+ */
+
 #include "m3/memory.hpp"
 #include "m3/memory_marionette.hpp"
 

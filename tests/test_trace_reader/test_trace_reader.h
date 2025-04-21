@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025 Micro Architecture Santa Cruz
+ * and Texer.ai. All rights reserved.
+ */
+
 #ifndef TEST_TRACE_READER_H_
 #define TEST_TRACE_READER_H_
 

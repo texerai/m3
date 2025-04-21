@@ -2,6 +2,7 @@
  * Copyright (c) 2025 Micro Architecture Santa Cruz
  * and Texer.ai. All rights reserved.
  */
+
 #ifndef RTL_HOOK_H_
 #define RTL_HOOK_H_
 

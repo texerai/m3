@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 2023 Micro Architecture Santa Cruz
+ * Copyright (c) 2025 Micro Architecture Santa Cruz
  * and Texer.ai. All rights reserved.
  */
+
 #include "bridge_boom.h"
 
 // C++ libraries.
@@ -67,7 +68,7 @@ namespace m3
             memop_info.m3id = m3cores[data.hart_id].inorder();
             memop_info.rob_id = data.rob_id;
             memop_info.instruction = data.rv_instruction;
-            memop_info.load_dest_reg = RVUtils::get_destination_from_load(data.rv_instruction);            
+            memop_info.load_dest_reg = RVUtils::get_destination_from_load(data.rv_instruction);
 
             // Double check the memop type.
             if (data.is_amo)
