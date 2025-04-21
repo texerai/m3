@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025 Micro Architecture Santa Cruz
+ * and Texer.ai. All rights reserved.
+ */
+
 #include "bridge_boom.h"
 #include "rtl_hook.h"
 
@@ -86,7 +91,7 @@ int main(int argc, char* argv[])
             bridge_boom.RegisterEvent(*hook_data_iter);
             ++hook_data_iter;
         }
-        
+
         // Serve the events.
         bridge_boom.ServeRegisteredEvents();
     }

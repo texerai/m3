@@ -2,6 +2,7 @@
  * Copyright (c) 2025 Micro Architecture Santa Cruz
  * and Texer.ai. All rights reserved.
  */
+
 #ifndef BRIDGE_BOOM_T_H_
 #define BRIDGE_BOOM_T_H_
 

@@ -1,7 +1,9 @@
 /*
- *  Copyright (c) 2023 Texer.ai. All rights reserved.
+ * Copyright (c) 2025 Micro Architecture Santa Cruz
+ * and Texer.ai. All rights reserved.
  */
- #include "utils/rvutils.h"
+
+#include "utils/rvutils.h"
 
 // Constants.
 static const uint64_t kOffset = 10000;

@@ -1,6 +1,8 @@
 /*
- *  Copyright (c) 2023 Texer.ai. All rights reserved.
+ * Copyright (c) 2025 Micro Architecture Santa Cruz
+ * and Texer.ai. All rights reserved.
  */
+
 #ifndef RISCV_UTILS_H_
 #define RISCV_UTILS_H_
 
@@ -8,7 +10,7 @@
 
 class RVUtils
 {
-public: 
+public:
     static bool is_store(uint32_t insn);
     static bool is_compressed_store(uint32_t insn);
     static bool  is_load(uint32_t insn);
