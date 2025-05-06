@@ -8,11 +8,12 @@ import yaml
 was_patched = []
 generated_files = []
 
+
 class FileWriter:
     def __init__(self, file):
         self.file = file
 
-    def line(self, line_contents, indentation_size = 0):
+    def line(self, line_contents, indentation_size=0):
         indentation = ""
 
         # Add indentation.
@@ -23,6 +24,7 @@ class FileWriter:
 
     def append(self, contents):
         self.file.write(contents)
+
 
 class Data:
     def __init__(self, action):
@@ -44,7 +46,7 @@ def read_verilog_files_list(file_path):
     sv_files = []
 
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             for line in file:
                 line = line.strip()
                 if line.endswith(".sv") or line.endswith(".v"):
@@ -59,11 +61,11 @@ def read_verilog_files_list(file_path):
 def get_module_to_file_map(sv_files_list):
     module_to_file_map = {}
 
-    module_pattern = re.compile(r'\s*module\s+(\w+)\s*\(')
+    module_pattern = re.compile(r"\s*module\s+(\w+)\s*\(")
 
     for sv_file in sv_files_list:
         try:
-            with open(sv_file, 'r') as file:
+            with open(sv_file, "r") as file:
                 for line in file:
                     match = module_pattern.search(line)
                     if match:
@@ -79,14 +81,14 @@ def get_module_to_file_map(sv_files_list):
 def get_module_to_submodules_map(sv_files_list):
     module_to_submodules_map = {}
 
-    module_pattern = re.compile(r'\s*module\s+(\w+)\s*\(')
-    submodule_pattern = re.compile(r'\s*(\w+)\s+(\w+)\s*\(')
+    module_pattern = re.compile(r"\s*module\s+(\w+)\s*\(")
+    submodule_pattern = re.compile(r"\s*(\w+)\s+(\w+)\s*\(")
 
     for sv_file in sv_files_list:
         current_module = None
 
         try:
-            with open(sv_file, 'r') as file:
+            with open(sv_file, "r") as file:
                 for line in file:
                     if "$" in line or "else" in line:
                         continue
@@ -100,7 +102,12 @@ def get_module_to_submodules_map(sv_files_list):
                         if submodule_match and current_module is not None:
                             submodule_type = submodule_match.group(1)
                             submodule_instance = submodule_match.group(2)
-                            module_to_submodules_map[current_module].append({ "module": submodule_type, "instance": submodule_instance })
+                            module_to_submodules_map[current_module].append(
+                                {
+                                    "module": submodule_type,
+                                    "instance": submodule_instance,
+                                }
+                            )
 
         except FileNotFoundError:
             print(f"File not found: {sv_file}")
@@ -128,13 +135,13 @@ def gen_wrapper(output_file_path, data):
 
         # Declare imports.
         writer.line("// Generated import declaration.")
-        writer.line("import \"DPI-C\" function void {}_DPI(".format(punch_name))
+        writer.line('import "DPI-C" function void {}_DPI('.format(punch_name))
         for signal in dpi_signals:
             type = "int"
             if signal["port_size"] > 32:
                 type = "longint"
 
-            if not signal["port_name"] in trigger_port_name:
+            if signal["port_name"] not in trigger_port_name:
                 line = "input {} {}".format(type, signal["port_name"])
                 if not signal["port_name"] == dpi_signals[-1]["port_name"]:
                     line += ","
@@ -159,7 +166,7 @@ def gen_wrapper(output_file_path, data):
             if not signal["port_name"] == dpi_signals[-1]["port_name"]:
                 port_line += ","
                 if len(arguments) > 0:
-                    if not arguments[-1] == ',':
+                    if not arguments[-1] == ",":
                         arguments += ","
 
             writer.line(port_line, 1)
@@ -201,16 +208,15 @@ def gen_wrapper(output_file_path, data):
             writer.line("end", 2)
             writer.line("end", 1)
 
-
         # Generate end the module definition.
         writer.line("endmodule")
 
 
 def gen_cpp_dpi_signature(dpi_cpp_path, data):
     signature = []
-    signature.append("extern \"C\" void {}_DPI".format(data.punch_name))
+    signature.append('extern "C" void {}_DPI'.format(data.punch_name))
     signature.append("(")
-    if not dpi_cpp_path in generated_files:
+    if dpi_cpp_path not in generated_files:
         generated_files.append(dpi_cpp_path)
     for signal in data.dpi_signals:
         if signal["port_name"] == data.trigger_signal:
@@ -243,8 +249,8 @@ def gen_cpp_dpi_signature(dpi_cpp_path, data):
 
 
 def add_code_after_port_def(file_name, module_name, data):
-    module_pattern = re.compile(r'\s*module\s+(\w+)\s*\(')
-    end_of_port_definition_pattern = re.compile(r'\s*\);')
+    module_pattern = re.compile(r"\s*module\s+(\w+)\s*\(")
+    end_of_port_definition_pattern = re.compile(r"\s*\);")
 
     found_module = False
     should_add_assignment = False
@@ -278,7 +284,7 @@ def add_code_after_port_def(file_name, module_name, data):
             content_to_write.append(line)
             if should_add_assignment:
                 assignment_added = True
-                should_add_assignment = False;
+                should_add_assignment = False
                 if data.action == "assignment":
                     content_to_write.append("assign {} = {};\n".format(data.assign_port_name, data.signal_to_search))
                 elif data.action == "inst_wrapper":
@@ -289,14 +295,14 @@ def add_code_after_port_def(file_name, module_name, data):
                     for s in data.dpi_signals:
                         content_to_write.append(".{0}({0})".format(s["port_name"]))
                         if not s["port_name"] == data.dpi_signals[-1]["port_name"]:
-                            content_to_write[-1] += ',\n'
+                            content_to_write[-1] += ",\n"
                         else:
-                            content_to_write[-1] += '\n'
+                            content_to_write[-1] += "\n"
                     content_to_write.append(");\n")
                 elif data.action == "dpi_signals":
                     for s in data.dpi_signals:
                         if s["port_size"] > 1:
-                            content_to_write.append("wire [{}:0] {};\n".format(s["port_size"]-1, s["port_name"]))
+                            content_to_write.append("wire [{}:0] {};\n".format(s["port_size"] - 1, s["port_name"]))
                         else:
                             content_to_write.append("wire {};\n".format(s["port_name"]))
                 elif data.action == "inst_module":
@@ -312,8 +318,8 @@ def add_code_after_port_def(file_name, module_name, data):
 
 
 def alter_file(file_name, top_module, module_name, instance_in_module, port_name, port_size):
-    module_pattern = re.compile(r'\s*module\s+(\w+)\s*\(')
-    submodule_pattern = re.compile(r'\s*(\w+)\s+(\w+)\s*\(')
+    module_pattern = re.compile(r"\s*module\s+(\w+)\s*\(")
+    submodule_pattern = re.compile(r"\s*(\w+)\s+(\w+)\s*\(")
 
     should_add_module_port = False
     should_add_instance_port = False
@@ -325,7 +331,7 @@ def alter_file(file_name, top_module, module_name, instance_in_module, port_name
         file_name = patched_file_name
     else:
         was_patched.append(file_name)
-    with open(file_name, 'r') as infile:
+    with open(file_name, "r") as infile:
         for line in infile:
             if "$" in line or "else" in line:
                 content_to_write.append(line)
@@ -347,7 +353,7 @@ def alter_file(file_name, top_module, module_name, instance_in_module, port_name
             if should_add_module_port:
                 should_add_module_port = False
                 if port_size > 1:
-                    content_to_write.append("    output [{}:0] {},\n".format(port_size-1, port_name))
+                    content_to_write.append("    output [{}:0] {},\n".format(port_size - 1, port_name))
                 else:
                     content_to_write.append("    output {},\n".format(port_name))
 
@@ -394,7 +400,7 @@ def punch_out(hierarchy, top_module, module_to_file_map, module_to_submodule_map
 def instantiate_module(data, top_module, module_to_file_map, instance_name, module_path):
     # Get the module name we are instantiating.
     module_name = ""
-    module_pattern = re.compile(r'\s*module\s+(\w+)\s*\(')
+    module_pattern = re.compile(r"\s*module\s+(\w+)\s*\(")
     was_found = False
     with open(module_path, "r") as infile:
         for line in infile:
@@ -416,7 +422,7 @@ def instantiate_module(data, top_module, module_to_file_map, instance_name, modu
         top_file_dir = os.path.dirname(top_file_path)
         cmd = "cp {} {}/.".format(module_path, top_file_dir)
         result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        was_copied = (result.returncode == 0)
+        was_copied = result.returncode == 0
     if not was_copied:
         print("Error: File {} was not copied.".format(module_path))
         exit(1)
@@ -427,13 +433,13 @@ def instantiate_module(data, top_module, module_to_file_map, instance_name, modu
     # generic: identify all output ports of the module and create wires for
     # all output ports.
     if was_copied:
-        generated_files.append('{}/{}'.format(top_file_dir, os.path.basename(module_path)))
+        generated_files.append("{}/{}".format(top_file_dir, os.path.basename(module_path)))
         inst_data = []
-        inst_data.append('wire [63:0] global_counter;\n')
-        inst_data.append('{} {} (\n'.format(module_name, instance_name))
-        inst_data.append('.clock({}),\n'.format(data.clock_signal))
-        inst_data.append('.reset({}),\n'.format(data.reset_signal))
-        inst_data.append('.count_o(global_counter));\n\n')
+        inst_data.append("wire [63:0] global_counter;\n")
+        inst_data.append("{} {} (\n".format(module_name, instance_name))
+        inst_data.append(".clock({}),\n".format(data.clock_signal))
+        inst_data.append(".reset({}),\n".format(data.reset_signal))
+        inst_data.append(".count_o(global_counter));\n\n")
         data.inst_module_lines = inst_data
         add_code_after_port_def(top_file_path, top_module, data)
 
@@ -484,7 +490,7 @@ def hook_dpi(file_path, module_to_file_map, module_to_submodule_map):
         for h in entry.get("hierarchy", []):
             full_hierarchy = h["path"]
             port_size = int(h["port_size"])
-            signal_name = full_hierarchy.split('.')[-1]
+            signal_name = full_hierarchy.split(".")[-1]
             port_name = f"punch_{punch_name}_{punch_id}"
             punch_id += 1
 
@@ -496,11 +502,13 @@ def hook_dpi(file_path, module_to_file_map, module_to_submodule_map):
                 pos_edged = "pos" in t
                 neg_edged = "neg" in t
 
-            dpi_signals.append({
-                "port_size": port_size,
-                "port_name": port_name,
-                "signal_name": signal_name
-            })
+            dpi_signals.append(
+                {
+                    "port_size": port_size,
+                    "port_name": port_name,
+                    "signal_name": signal_name,
+                }
+            )
             print(f"Punching out: {full_hierarchy}")
             punch_out(full_hierarchy, top_module, module_to_file_map, module_to_submodule_map, port_name, port_size)
 
