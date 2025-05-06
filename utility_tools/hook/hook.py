@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import subprocess
+import yaml
 
 was_patched = []
 generated_files = []
@@ -38,6 +39,7 @@ class Data:
         self.punch_name = ""
         self.inst_module_lines = []
 
+
 def read_verilog_files_list(file_path):
     sv_files = []
 
@@ -52,6 +54,7 @@ def read_verilog_files_list(file_path):
         return None
 
     return sv_files
+
 
 def get_module_to_file_map(sv_files_list):
     module_to_file_map = {}
@@ -71,6 +74,7 @@ def get_module_to_file_map(sv_files_list):
             continue
 
     return module_to_file_map
+
 
 def get_module_to_submodules_map(sv_files_list):
     module_to_submodules_map = {}
@@ -103,6 +107,7 @@ def get_module_to_submodules_map(sv_files_list):
             continue
 
     return module_to_submodules_map
+
 
 def gen_wrapper(output_file_path, data):
     punch_name = data.punch_name
@@ -200,6 +205,7 @@ def gen_wrapper(output_file_path, data):
         # Generate end the module definition.
         writer.line("endmodule")
 
+
 def gen_cpp_dpi_signature(dpi_cpp_path, data):
     signature = []
     signature.append("extern \"C\" void {}_DPI".format(data.punch_name))
@@ -234,6 +240,7 @@ def gen_cpp_dpi_signature(dpi_cpp_path, data):
     for line in signature:
         print(line)
     print("")
+
 
 def add_code_after_port_def(file_name, module_name, data):
     module_pattern = re.compile(r'\s*module\s+(\w+)\s*\(')
@@ -303,6 +310,7 @@ def add_code_after_port_def(file_name, module_name, data):
         for line in content_to_write:
             outfile.write(line)
 
+
 def alter_file(file_name, top_module, module_name, instance_in_module, port_name, port_size):
     module_pattern = re.compile(r'\s*module\s+(\w+)\s*\(')
     submodule_pattern = re.compile(r'\s*(\w+)\s+(\w+)\s*\(')
@@ -351,6 +359,7 @@ def alter_file(file_name, top_module, module_name, instance_in_module, port_name
         for line in content_to_write:
             outfile.write(line)
 
+
 def punch_out(hierarchy, top_module, module_to_file_map, module_to_submodule_map, port_name, port_size):
     instances = hierarchy.split(".")
     module_to_search = top_module
@@ -380,6 +389,7 @@ def punch_out(hierarchy, top_module, module_to_file_map, module_to_submodule_map
     data.assign_port_name = port_name
     data.signal_to_search = signal_to_search
     add_code_after_port_def(module_to_file_map[module_to_search], module_to_search, data)
+
 
 def instantiate_module(data, top_module, module_to_file_map, instance_name, module_path):
     # Get the module name we are instantiating.
@@ -435,103 +445,84 @@ def put_wrapper(top_module_file_path, top_module, data):
     data.action = "dpi_signals"
     add_code_after_port_def(top_module_file_path, top_module, data)
 
+
 def hook_dpi(file_path, module_to_file_map, module_to_submodule_map):
-    state = "search_begin"
-    top_module = ""
-    punch_name = ""
-    punch_id = 0
-    dpi_signals = []
-    should_gen_wrapper = False
-    clock_signal = ""
-    reset_signal = ""
-    dpi_group = ""
-    trigger_signal = ""
-    edged_trigger = False
     with open(file_path, "r") as infile:
-        for line in infile:
-            if "#" in line or len(line.strip()) == 0:
-                continue
+        specs = yaml.safe_load(infile)
 
-            if state == "search_begin":
-                if "@begin" in line:
-                    if "instantiate" in line:
-                        data = line.split()
-                        top_module = data[2].split(':')[1]
-                        clock_signal = data[3].split(':')[1]
-                        reset_signal = data[4].split(':')[1]
-                        state = "inst_module"
-                        print("Instantiating modules at: {}...".format(top_module))
-                    else:
-                        should_gen_wrapper = False
-                        data = line.split()
-                        punch_name = data[1].split(':')[1]
-                        top_module = data[2].split(':')[1]
-                        clock_signal = data[3].split(':')[1]
-                        reset_signal = data[4].split(':')[1]
-                        dpi_group = data[5].split(':')[1]
-                        trigger_signal = ""
-                        edged_trigger = False
-                        dpi_signals = []
-                        state = "punch_signals"
-                        print("Punching signals for DPI: {}...".format(punch_name))
-                        print("Bringing signals from deeper hierarchy to: {}.".format(top_module))
-            elif state == "punch_signals":
-                if not "@end" in line:
-                    data = line.strip().split()
-                    full_hierarchy = data[0].split(':')[1]
-                    port_size = int(data[1].split(':')[1])
-                    signal_name = full_hierarchy.split('.')[-1]
-                    hierarchy = full_hierarchy.split('.')[:-1]
-                    port_name = "punch_{}_{}".format(punch_name, punch_id)
-                    if len(data) > 2:
-                        t = data[2].split(':')
-                        if t[0] == "type":
-                            trigger_signal = port_name
-                            edged_trigger = ("edged" in t[1])
-                            pos_edged = ("pos" in t[1])
-                            neg_edged = ("neg" in t[1])
+    for entry in specs:
+        # Handle instantiation
+        if entry.get("action") == "instantiate":
+            top_module = entry["top_module"]
+            clock_signal = entry["clock"]
+            reset_signal = entry["reset"]
+            inst_name = entry["inst_name"]
+            module_path = entry["module_path"]
+            inst_data = Data("inst_module")
+            inst_data.clock_signal = clock_signal
+            inst_data.reset_signal = reset_signal
+            instantiate_module(inst_data, top_module, module_to_file_map, inst_name, module_path)
+            print(f"Instantiating modules at: {top_module}...")
+            continue
 
-                    punch_id += 1
-                    dpi_signals.append({"port_size": port_size, "port_name": port_name, "signal_name": signal_name})
-                    print("Punching out: {}".format(full_hierarchy))
-                    punch_out(full_hierarchy, top_module, module_to_file_map, module_to_submodule_map, port_name, port_size)
-                else:
-                    should_gen_wrapper = True
-                    state = "search_begin"
-            elif state == "inst_module":
-                if not "@end" in line:
-                    data = line.strip().split()
-                    instance_name = data[0].split(':')[1]
-                    module_path = data[1].split(':')[1]
-                    inst_data = Data("inst_module")
-                    inst_data.clock_signal = clock_signal
-                    inst_data.reset_signal = reset_signal
-                    instantiate_module(inst_data, top_module, module_to_file_map, instance_name, module_path)
-                else:
-                    state = "search_begin"
+        # Handle punch (DPI) blocks
+        punch_name = entry.get("punch_name", "")
+        top_module = entry["top_module"]
+        clock_signal = entry["clock"]
+        reset_signal = entry["reset"]
+        dpi_group = entry.get("dpi_group", "")
+        trigger_signal = ""
+        edged_trigger = False
+        pos_edged = False
+        neg_edged = False
+        dpi_signals = []
+        punch_id = 0
 
-            if should_gen_wrapper:
-                # Pack data.
-                data = Data("none")
-                data.punch_name = punch_name
-                data.clock_signal = clock_signal
-                data.reset_signal = reset_signal
-                data.trigger_signal = trigger_signal
-                data.edged_trigger = edged_trigger
-                data.pos_edged = pos_edged
-                data.neg_edged = neg_edged
-                data.dpi_signals = dpi_signals
+        print(f"Punching signals for DPI: {punch_name}...")
+        print(f"Bringing signals from deeper hierarchy to: {top_module}.")
 
-                # Put wrapper instance on top level.
-                put_wrapper(module_to_file_map[top_module], top_module, data)
+        for h in entry.get("hierarchy", []):
+            full_hierarchy = h["path"]
+            port_size = int(h["port_size"])
+            signal_name = full_hierarchy.split('.')[-1]
+            port_name = f"punch_{punch_name}_{punch_id}"
+            punch_id += 1
 
-                # Generate wrapper verilog file.
-                wrapper_path = "{}/{}_wrapper.v".format(os.path.dirname(module_to_file_map[top_module]), punch_name)
-                gen_wrapper(wrapper_path, data)
+            # Handle type (trigger/edged_trigger)
+            t = h.get("type", "")
+            if t:
+                trigger_signal = port_name
+                edged_trigger = "edged" in t
+                pos_edged = "pos" in t
+                neg_edged = "neg" in t
 
-                # Suggest DPI signatures.
-                dpi_cpp_path = "{}/{}_dpi.cpp".format(os.path.dirname(module_to_file_map[top_module]), dpi_group)
-                gen_cpp_dpi_signature(dpi_cpp_path, data)
+            dpi_signals.append({
+                "port_size": port_size,
+                "port_name": port_name,
+                "signal_name": signal_name
+            })
+            print(f"Punching out: {full_hierarchy}")
+            punch_out(full_hierarchy, top_module, module_to_file_map, module_to_submodule_map, port_name, port_size)
+
+        # Pack data and generate wrapper if needed
+        data = Data("none")
+        data.punch_name = punch_name
+        data.clock_signal = clock_signal
+        data.reset_signal = reset_signal
+        data.trigger_signal = trigger_signal
+        data.edged_trigger = edged_trigger
+        data.pos_edged = pos_edged
+        data.neg_edged = neg_edged
+        data.dpi_signals = dpi_signals
+
+        put_wrapper(module_to_file_map[top_module], top_module, data)
+
+        wrapper_path = f"{os.path.dirname(module_to_file_map[top_module])}/{punch_name}_wrapper.v"
+        gen_wrapper(wrapper_path, data)
+
+        dpi_cpp_path = f"{os.path.dirname(module_to_file_map[top_module])}/{dpi_group}_dpi.cpp"
+        gen_cpp_dpi_signature(dpi_cpp_path, data)
+
 
 def gen_patched_file_list(file_list_path):
     new_file_list_path = "{}.patched.f".format(file_list_path)
@@ -558,4 +549,3 @@ if __name__ == "__main__":
     module_to_submodule_map = get_module_to_submodules_map(v_files_list)
     hook_dpi(punch_config_file_path, module_to_file_map, module_to_submodule_map)
     gen_patched_file_list(file_list_path)
-
