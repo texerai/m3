@@ -1,4 +1,5 @@
-# Copyright (c) 2023 Kabylkas Lab. All rights reserved.
+# Copyright (c) 2025 Micro Architecture Santa Cruz
+# and Texer.ai. All rights reserved.
 import os
 import re
 import sys
