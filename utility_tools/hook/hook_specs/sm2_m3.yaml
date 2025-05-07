@@ -1,0 +1,648 @@
+##
+## Add Aux Modules.
+##
+# Add global counter for tracing and debugging.
+- action: instantiate
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  inst_name: GlobalCounter
+  module_path: ./rtl_helper_modules/counter.v
+
+# Dromajo DPIs
+- punch_name: register_instruction # Corresponds to @begin punch_name:register_instruction
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: dromajo
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.dispatcher.(io_dis_uops_0_0_valid|io_dis_uops_1_0_valid|io_dis_uops_2_0_valid)
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_valid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_valid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_valid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_bits_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_bits_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_bits_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_bits_debug_inst
+        port_size: 32
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_bits_debug_inst
+        port_size: 32
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_bits_debug_inst
+        port_size: 32
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_bits_debug_pc
+        port_size: 40
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_bits_debug_pc
+        port_size: 40
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_bits_debug_pc
+        port_size: 40
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_bits_pdst
+        port_size: 6
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_bits_pdst
+        port_size: 6
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_bits_pdst
+        port_size: 6
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_bits_fp_val
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_bits_fp_val
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_bits_fp_val
+        port_size: 1
+
+- punch_name: write_back_data # Write back data. Integer register file.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: dromajo
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.iregfile.(io_write_ports_0_valid|io_write_ports_1_valid)
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.iregfile.io_write_ports_0_valid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.iregfile.io_write_ports_1_valid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.iregfile.io_write_ports_0_bits_data
+        port_size: 64
+      - path: element_reset_domain_boom_tile.core.iregfile.io_write_ports_1_bits_data
+        port_size: 64
+      - path: element_reset_domain_boom_tile.core.iregfile.io_write_ports_0_bits_addr
+        port_size: 6
+      - path: element_reset_domain_boom_tile.core.iregfile.io_write_ports_1_bits_addr
+        port_size: 6
+
+- punch_name: write_back_fpdata # Write back data. FP register file.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: dromajo
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.FpPipeline.fregfile.(io_write_ports_0_valid|io_write_ports_1_valid)
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.FpPipeline.fregfile.io_write_ports_0_valid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.FpPipeline.fregfile.io_write_ports_1_valid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.FpPipeline.fregfile.io_write_ports_0_bits_data
+        port_size: 64
+      - path: element_reset_domain_boom_tile.core.FpPipeline.fregfile.io_write_ports_1_bits_data
+        port_size: 64
+      - path: element_reset_domain_boom_tile.core.FpPipeline.fregfile.io_write_ports_0_bits_addr
+        port_size: 6
+      - path: element_reset_domain_boom_tile.core.FpPipeline.fregfile.io_write_ports_1_bits_addr
+        port_size: 6
+
+- punch_name: rob_commit # Commit instruction.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: dromajo
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.rob.io_commit_valids_0
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.rob.com_idx
+        port_size: 5
+
+# M3 DPIs.
+- punch_name: create_memop_inorder # Add a memop instruction in-order.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.rob.(io_enq_valids_0&(io_enq_uops_0_uses_ldq|io_enq_uops_0_uses_stq))
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.rob.io_enq_uops_0_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.core.rob.({io_enq_uops_0_uses_ldq,io_enq_uops_0_uses_stq})
+        port_size: 2
+      - path: element_reset_domain_boom_tile.core.rob.io_enq_uops_0_debug_inst
+        port_size: 32
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_store_address_0 # Add addresses from STQs.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.stq_0_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.stq_0_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.stq_0_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.stq_0_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(0)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_store_address_1
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.stq_1_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.stq_1_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.stq_1_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.stq_1_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(1)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_store_address_2
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.stq_2_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.stq_2_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.stq_2_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.stq_2_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(2)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_store_address_3
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.stq_3_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.stq_3_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.stq_3_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.stq_3_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(3)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_store_address_4
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.stq_4_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.stq_4_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.stq_4_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.stq_4_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(4)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_store_address_5
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.stq_5_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.stq_5_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.stq_5_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.stq_5_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(5)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_store_address_6
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.stq_6_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.stq_6_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.stq_6_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.stq_6_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(6)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_store_address_7
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.stq_7_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.stq_7_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.stq_7_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.stq_7_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(7)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_load_address_0 # Add addresses from LDQs.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.ldq_0_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.ldq_0_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.ldq_0_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.ldq_0_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(0)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_load_address_1
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.ldq_1_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.ldq_1_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.ldq_1_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.ldq_1_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(1)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_load_address_2
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.ldq_2_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.ldq_2_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.ldq_2_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.ldq_2_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(2)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_load_address_3
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.ldq_3_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.ldq_3_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.ldq_3_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.ldq_3_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(3)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_load_address_4
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.ldq_4_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.ldq_4_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.ldq_4_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.ldq_4_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(4)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_load_address_5
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.ldq_5_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.ldq_5_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.ldq_5_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.ldq_5_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(5)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_load_address_6
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.ldq_6_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.ldq_6_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.ldq_6_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.ldq_6_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(6)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_load_address_7
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.ldq_7_bits_addr_valid
+        port_size: 1
+        type: edged_trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.ldq_7_bits_addr_bits
+        port_size: 40
+      - path: element_reset_domain_boom_tile.lsu.ldq_7_bits_uop_mem_size
+        port_size: 2
+      - path: element_reset_domain_boom_tile.lsu.ldq_7_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.(7)
+        port_size: 3
+      - path: global_counter
+        port_size: 64
+
+- punch_name: i_perform_load # Perform the loads.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.(io_core_exe_0_iresp_valid&(~io_core_exe_0_iresp_bits_uop_uses_stq))
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.io_core_exe_0_iresp_bits_data
+        port_size: 64
+      - path: element_reset_domain_boom_tile.lsu.io_core_exe_0_iresp_bits_uop_rob_idx
+        port_size: 5
+      - path: global_counter
+        port_size: 64
+
+- punch_name: add_store_data
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.(stq_7_bits_data_valid|stq_6_bits_data_valid|stq_5_bits_data_valid|stq_4_bits_data_valid|stq_3_bits_data_valid|stq_2_bits_data_valid|stq_1_bits_data_valid|stq_0_bits_data_valid)
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.lsu.({stq_7_bits_data_valid,stq_6_bits_data_valid,stq_5_bits_data_valid,stq_4_bits_data_valid,stq_3_bits_data_valid,stq_2_bits_data_valid,stq_1_bits_data_valid,stq_0_bits_data_valid})
+        port_size: 8
+      - path: element_reset_domain_boom_tile.lsu.stq_0_bits_data_bits
+        port_size: 64
+      - path: element_reset_domain_boom_tile.lsu.stq_1_bits_data_bits
+        port_size: 64
+      - path: element_reset_domain_boom_tile.lsu.stq_2_bits_data_bits
+        port_size: 64
+      - path: element_reset_domain_boom_tile.lsu.stq_3_bits_data_bits
+        port_size: 64
+      - path: element_reset_domain_boom_tile.lsu.stq_4_bits_data_bits
+        port_size: 64
+      - path: element_reset_domain_boom_tile.lsu.stq_5_bits_data_bits
+        port_size: 64
+      - path: element_reset_domain_boom_tile.lsu.stq_6_bits_data_bits
+        port_size: 64
+      - path: element_reset_domain_boom_tile.lsu.stq_7_bits_data_bits
+        port_size: 64
+      - path: element_reset_domain_boom_tile.lsu.stq_0_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_1_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_2_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_3_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_4_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_5_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_6_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_7_bits_uop_rob_idx
+        port_size: 5
+      - path: global_counter
+        port_size: 64
+
+- punch_name: complete_store # Complete the store.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.lsu.((stq_0_bits_succeeded&~stq_0_bits_uop_is_amo)|(stq_1_bits_succeeded&~stq_1_bits_uop_is_amo)|(stq_2_bits_succeeded&~stq_2_bits_uop_is_amo)|(stq_3_bits_succeeded&~stq_3_bits_uop_is_amo)|(stq_4_bits_succeeded&~stq_4_bits_uop_is_amo)|(stq_5_bits_succeeded&~stq_5_bits_uop_is_amo)|(stq_6_bits_succeeded&~stq_6_bits_uop_is_amo)|(stq_7_bits_succeeded&~stq_7_bits_uop_is_amo))
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.lsu.({(stq_7_bits_succeeded&~stq_7_bits_uop_is_amo),(stq_6_bits_succeeded&~stq_6_bits_uop_is_amo),(stq_5_bits_succeeded&~stq_5_bits_uop_is_amo),(stq_4_bits_succeeded&~stq_4_bits_uop_is_amo),(stq_3_bits_succeeded&~stq_3_bits_uop_is_amo),(stq_2_bits_succeeded&~stq_2_bits_uop_is_amo),(stq_1_bits_succeeded&~stq_1_bits_uop_is_amo),(stq_0_bits_succeeded&~stq_0_bits_uop_is_amo)})
+        port_size: 8
+      - path: element_reset_domain_boom_tile.lsu.stq_0_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_1_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_2_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_3_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_4_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_5_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_6_bits_uop_rob_idx
+        port_size: 5
+      - path: element_reset_domain_boom_tile.lsu.stq_7_bits_uop_rob_idx
+        port_size: 5
+      - path: global_counter
+        port_size: 64
+
+- punch_name: commit_memop # Commit memop.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.rob.(io_commit_valids_0&(io_commit_uops_0_uses_ldq|io_commit_uops_0_uses_stq))
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.rob.com_idx
+        port_size: 5
+      - path: global_counter
+        port_size: 64
+
+- punch_name: update_cache_meta # Update metadata of the cache.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.dcache.metaWriteArb.io_out_valid
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_way_en
+        port_size: 4
+      - path: element_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_idx
+        port_size: 6
+      - path: element_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_data_coh_state
+        port_size: 2
+      - path: element_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_data_tag
+        port_size: 20
+      - path: global_counter
+        port_size: 64
+
+- punch_name: update_cache_data # Update data of the cache.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.dcache.dataWriteArb.io_out_valid
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.dcache.dataWriteArb.io_out_bits_way_en
+        port_size: 4
+      - path: element_reset_domain_boom_tile.dcache.dataWriteArb.io_out_bits_addr
+        port_size: 12
+      - path: global_counter
+        port_size: 64
