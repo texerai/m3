@@ -1,0 +1,75 @@
+
+# Add store data when valid.
+@begin punch_name:add_store_data_0 top_module:TilePRCIDomain clock:auto_tap_clock_in_clock reset:auto_tap_clock_in_reset dpi_group:m3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_0_bits_data_valid port_size:1 type:edged_trigger
+hierarchy:tile_reset_domain_boom_tile.core.io_hartid port_size:1
+hierarchy:tile_reset_domain_boom_tile.lsu.(0) port_size:3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_0_bits_addr_bits port_size:40
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_0_bits_data_bits port_size:64
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_0_bits_uop_mem_size port_size:2
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_0_bits_uop_is_amo port_size:1
+@end
+@begin punch_name:add_store_data_1 top_module:TilePRCIDomain clock:auto_tap_clock_in_clock reset:auto_tap_clock_in_reset dpi_group:m3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_1_bits_data_valid port_size:1 type:edged_trigger
+hierarchy:tile_reset_domain_boom_tile.core.io_hartid port_size:1
+hierarchy:tile_reset_domain_boom_tile.lsu.(1) port_size:3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_1_bits_addr_bits port_size:40
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_1_bits_data_bits port_size:64
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_1_bits_uop_mem_size port_size:2
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_1_bits_uop_is_amo port_size:1
+@end
+@begin punch_name:add_store_data_2 top_module:TilePRCIDomain clock:auto_tap_clock_in_clock reset:auto_tap_clock_in_reset dpi_group:m3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_2_bits_data_valid port_size:1 type:edged_trigger
+hierarchy:tile_reset_domain_boom_tile.core.io_hartid port_size:1
+hierarchy:tile_reset_domain_boom_tile.lsu.(2) port_size:3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_2_bits_addr_bits port_size:40
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_2_bits_data_bits port_size:64
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_2_bits_uop_mem_size port_size:2
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_2_bits_uop_is_amo port_size:1
+@end
+@begin punch_name:add_store_data_3 top_module:TilePRCIDomain clock:auto_tap_clock_in_clock reset:auto_tap_clock_in_reset dpi_group:m3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_3_bits_data_valid port_size:1 type:edged_trigger
+hierarchy:tile_reset_domain_boom_tile.core.io_hartid port_size:1
+hierarchy:tile_reset_domain_boom_tile.lsu.(3) port_size:3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_3_bits_addr_bits port_size:40
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_3_bits_data_bits port_size:64
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_3_bits_uop_mem_size port_size:2
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_3_bits_uop_is_amo port_size:1
+@end
+@begin punch_name:add_store_data_4 top_module:TilePRCIDomain clock:auto_tap_clock_in_clock reset:auto_tap_clock_in_reset dpi_group:m3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_4_bits_data_valid port_size:1 type:edged_trigger
+hierarchy:tile_reset_domain_boom_tile.core.io_hartid port_size:1
+hierarchy:tile_reset_domain_boom_tile.lsu.(4) port_size:3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_4_bits_addr_bits port_size:40
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_4_bits_data_bits port_size:64
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_4_bits_uop_mem_size port_size:2
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_4_bits_uop_is_amo port_size:1
+@end
+@begin punch_name:add_store_data_5 top_module:TilePRCIDomain clock:auto_tap_clock_in_clock reset:auto_tap_clock_in_reset dpi_group:m3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_5_bits_data_valid port_size:1 type:edged_trigger
+hierarchy:tile_reset_domain_boom_tile.core.io_hartid port_size:1
+hierarchy:tile_reset_domain_boom_tile.lsu.(5) port_size:3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_5_bits_addr_bits port_size:40
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_5_bits_data_bits port_size:64
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_5_bits_uop_mem_size port_size:2
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_5_bits_uop_is_amo port_size:1
+@end
+@begin punch_name:add_store_data_6 top_module:TilePRCIDomain clock:auto_tap_clock_in_clock reset:auto_tap_clock_in_reset dpi_group:m3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_6_bits_data_valid port_size:1 type:edged_trigger
+hierarchy:tile_reset_domain_boom_tile.core.io_hartid port_size:1
+hierarchy:tile_reset_domain_boom_tile.lsu.(6) port_size:3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_6_bits_addr_bits port_size:40
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_6_bits_data_bits port_size:64
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_6_bits_uop_mem_size port_size:2
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_6_bits_uop_is_amo port_size:1
+@end
+@begin punch_name:add_store_data_7 top_module:TilePRCIDomain clock:auto_tap_clock_in_clock reset:auto_tap_clock_in_reset dpi_group:m3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_7_bits_data_valid port_size:1 type:edged_trigger
+hierarchy:tile_reset_domain_boom_tile.core.io_hartid port_size:1
+hierarchy:tile_reset_domain_boom_tile.lsu.(7) port_size:3
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_7_bits_addr_bits port_size:40
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_7_bits_data_bits port_size:64
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_7_bits_uop_mem_size port_size:2
+hierarchy:tile_reset_domain_boom_tile.lsu.stq_7_bits_uop_is_amo port_size:1
+@end
+

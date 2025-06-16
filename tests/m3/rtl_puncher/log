@@ -1,0 +1,1406 @@
+Instantiating modules at: TilePRCIDomain...
+Punching signals for DPI: register_instruction...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.(io_dis_uops_0_0_valid|io_dis_uops_1_0_valid|io_dis_uops_2_0_valid)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_bits_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_bits_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_bits_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_bits_debug_inst
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_bits_debug_inst
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_bits_debug_inst
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_bits_debug_pc
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_bits_debug_pc
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_bits_debug_pc
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_bits_pdst
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_bits_pdst
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_bits_pdst
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_0_0_bits_fp_val
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_1_0_bits_fp_val
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.dispatcher.io_dis_uops_2_0_bits_fp_val
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance dispatcher in module BoomCore
+Suggested DPI function signature for register_instruction:
+extern "C" void register_instruction_DPI
+(
+    // io_hartid:1
+    int punch_register_instruction_1,
+
+    // io_dis_uops_0_0_valid:1
+    int punch_register_instruction_2,
+
+    // io_dis_uops_1_0_valid:1
+    int punch_register_instruction_3,
+
+    // io_dis_uops_2_0_valid:1
+    int punch_register_instruction_4,
+
+    // io_dis_uops_0_0_bits_rob_idx:5
+    int punch_register_instruction_5,
+
+    // io_dis_uops_1_0_bits_rob_idx:5
+    int punch_register_instruction_6,
+
+    // io_dis_uops_2_0_bits_rob_idx:5
+    int punch_register_instruction_7,
+
+    // io_dis_uops_0_0_bits_debug_inst:32
+    int punch_register_instruction_8,
+
+    // io_dis_uops_1_0_bits_debug_inst:32
+    int punch_register_instruction_9,
+
+    // io_dis_uops_2_0_bits_debug_inst:32
+    int punch_register_instruction_10,
+
+    // io_dis_uops_0_0_bits_debug_pc:40
+    long long punch_register_instruction_11,
+
+    // io_dis_uops_1_0_bits_debug_pc:40
+    long long punch_register_instruction_12,
+
+    // io_dis_uops_2_0_bits_debug_pc:40
+    long long punch_register_instruction_13,
+
+    // io_dis_uops_0_0_bits_pdst:6
+    int punch_register_instruction_14,
+
+    // io_dis_uops_1_0_bits_pdst:6
+    int punch_register_instruction_15,
+
+    // io_dis_uops_2_0_bits_pdst:6
+    int punch_register_instruction_16,
+
+    // io_dis_uops_0_0_bits_fp_val:1
+    int punch_register_instruction_17,
+
+    // io_dis_uops_1_0_bits_fp_val:1
+    int punch_register_instruction_18,
+
+    // io_dis_uops_2_0_bits_fp_val:1
+    int punch_register_instruction_19
+)
+{
+}
+
+Punching signals for DPI: write_back_data...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.core.iregfile.(io_write_ports_0_valid|io_write_ports_1_valid)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance iregfile in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.iregfile.io_write_ports_0_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance iregfile in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.iregfile.io_write_ports_1_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance iregfile in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.iregfile.io_write_ports_0_bits_data
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance iregfile in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.iregfile.io_write_ports_1_bits_data
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance iregfile in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.iregfile.io_write_ports_0_bits_addr
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance iregfile in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.iregfile.io_write_ports_1_bits_addr
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance iregfile in module BoomCore
+Suggested DPI function signature for write_back_data:
+extern "C" void write_back_data_DPI
+(
+    // io_hartid:1
+    int punch_write_back_data_21,
+
+    // io_write_ports_0_valid:1
+    int punch_write_back_data_22,
+
+    // io_write_ports_1_valid:1
+    int punch_write_back_data_23,
+
+    // io_write_ports_0_bits_data:64
+    long long punch_write_back_data_24,
+
+    // io_write_ports_1_bits_data:64
+    long long punch_write_back_data_25,
+
+    // io_write_ports_0_bits_addr:6
+    int punch_write_back_data_26,
+
+    // io_write_ports_1_bits_addr:6
+    int punch_write_back_data_27
+)
+{
+}
+
+Punching signals for DPI: write_back_fpdata...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.core.fp_pipeline.fregfile.(io_write_ports_0_valid|io_write_ports_1_valid)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance fp_pipeline in module BoomCore
+ - Punching through instance fregfile in module FpPipeline
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.fp_pipeline.fregfile.io_write_ports_0_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance fp_pipeline in module BoomCore
+ - Punching through instance fregfile in module FpPipeline
+Punching out: tile_reset_domain_boom_tile.core.fp_pipeline.fregfile.io_write_ports_1_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance fp_pipeline in module BoomCore
+ - Punching through instance fregfile in module FpPipeline
+Punching out: tile_reset_domain_boom_tile.core.fp_pipeline.fregfile.io_write_ports_0_bits_data
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance fp_pipeline in module BoomCore
+ - Punching through instance fregfile in module FpPipeline
+Punching out: tile_reset_domain_boom_tile.core.fp_pipeline.fregfile.io_write_ports_1_bits_data
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance fp_pipeline in module BoomCore
+ - Punching through instance fregfile in module FpPipeline
+Punching out: tile_reset_domain_boom_tile.core.fp_pipeline.fregfile.io_write_ports_0_bits_addr
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance fp_pipeline in module BoomCore
+ - Punching through instance fregfile in module FpPipeline
+Punching out: tile_reset_domain_boom_tile.core.fp_pipeline.fregfile.io_write_ports_1_bits_addr
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance fp_pipeline in module BoomCore
+ - Punching through instance fregfile in module FpPipeline
+Suggested DPI function signature for write_back_fpdata:
+extern "C" void write_back_fpdata_DPI
+(
+    // io_hartid:1
+    int punch_write_back_fpdata_29,
+
+    // io_write_ports_0_valid:1
+    int punch_write_back_fpdata_30,
+
+    // io_write_ports_1_valid:1
+    int punch_write_back_fpdata_31,
+
+    // io_write_ports_0_bits_data:64
+    long long punch_write_back_fpdata_32,
+
+    // io_write_ports_1_bits_data:64
+    long long punch_write_back_fpdata_33,
+
+    // io_write_ports_0_bits_addr:6
+    int punch_write_back_fpdata_34,
+
+    // io_write_ports_1_bits_addr:6
+    int punch_write_back_fpdata_35
+)
+{
+}
+
+Punching signals for DPI: rob_commit...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.core.rob.io_commit_valids_0
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance rob in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.rob.com_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance rob in module BoomCore
+Suggested DPI function signature for rob_commit:
+extern "C" void rob_commit_DPI
+(
+    // io_hartid:1
+    int punch_rob_commit_37,
+
+    // com_idx:5
+    int punch_rob_commit_38
+)
+{
+}
+
+Punching signals for DPI: create_memop_inorder...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.core.rob.(io_enq_valids_0&(io_enq_uops_0_uses_ldq|io_enq_uops_0_uses_stq))
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance rob in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.rob.io_enq_uops_0_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance rob in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.rob.({io_enq_uops_0_uses_ldq,io_enq_uops_0_uses_stq})
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance rob in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.rob.io_enq_uops_0_debug_inst
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance rob in module BoomCore
+Punching out: global_counter
+Suggested DPI function signature for create_memop_inorder:
+extern "C" void create_memop_inorder_DPI
+(
+    // io_hartid:1
+    int punch_create_memop_inorder_40,
+
+    // io_enq_uops_0_rob_idx:5
+    int punch_create_memop_inorder_41,
+
+    // ({io_enq_uops_0_uses_ldq,io_enq_uops_0_uses_stq}):2
+    int punch_create_memop_inorder_42,
+
+    // io_enq_uops_0_debug_inst:32
+    int punch_create_memop_inorder_43,
+
+    // global_counter:64
+    long long punch_create_memop_inorder_44
+)
+{
+}
+
+Punching signals for DPI: add_store_address_0...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.stq_0_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_0_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_0_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_0_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(0)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_store_address_0:
+extern "C" void add_store_address_0_DPI
+(
+    // io_hartid:1
+    int punch_add_store_address_0_46,
+
+    // stq_0_bits_addr_bits:40
+    long long punch_add_store_address_0_47,
+
+    // stq_0_bits_uop_mem_size:2
+    int punch_add_store_address_0_48,
+
+    // stq_0_bits_uop_rob_idx:5
+    int punch_add_store_address_0_49,
+
+    // (0):3
+    int punch_add_store_address_0_50,
+
+    // global_counter:64
+    long long punch_add_store_address_0_51
+)
+{
+}
+
+Punching signals for DPI: add_store_address_1...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.stq_1_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_1_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_1_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_1_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(1)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_store_address_1:
+extern "C" void add_store_address_1_DPI
+(
+    // io_hartid:1
+    int punch_add_store_address_1_53,
+
+    // stq_1_bits_addr_bits:40
+    long long punch_add_store_address_1_54,
+
+    // stq_1_bits_uop_mem_size:2
+    int punch_add_store_address_1_55,
+
+    // stq_1_bits_uop_rob_idx:5
+    int punch_add_store_address_1_56,
+
+    // (1):3
+    int punch_add_store_address_1_57,
+
+    // global_counter:64
+    long long punch_add_store_address_1_58
+)
+{
+}
+
+Punching signals for DPI: add_store_address_2...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.stq_2_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_2_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_2_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_2_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(2)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_store_address_2:
+extern "C" void add_store_address_2_DPI
+(
+    // io_hartid:1
+    int punch_add_store_address_2_60,
+
+    // stq_2_bits_addr_bits:40
+    long long punch_add_store_address_2_61,
+
+    // stq_2_bits_uop_mem_size:2
+    int punch_add_store_address_2_62,
+
+    // stq_2_bits_uop_rob_idx:5
+    int punch_add_store_address_2_63,
+
+    // (2):3
+    int punch_add_store_address_2_64,
+
+    // global_counter:64
+    long long punch_add_store_address_2_65
+)
+{
+}
+
+Punching signals for DPI: add_store_address_3...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.stq_3_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_3_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_3_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_3_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(3)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_store_address_3:
+extern "C" void add_store_address_3_DPI
+(
+    // io_hartid:1
+    int punch_add_store_address_3_67,
+
+    // stq_3_bits_addr_bits:40
+    long long punch_add_store_address_3_68,
+
+    // stq_3_bits_uop_mem_size:2
+    int punch_add_store_address_3_69,
+
+    // stq_3_bits_uop_rob_idx:5
+    int punch_add_store_address_3_70,
+
+    // (3):3
+    int punch_add_store_address_3_71,
+
+    // global_counter:64
+    long long punch_add_store_address_3_72
+)
+{
+}
+
+Punching signals for DPI: add_store_address_4...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.stq_4_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_4_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_4_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_4_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(4)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_store_address_4:
+extern "C" void add_store_address_4_DPI
+(
+    // io_hartid:1
+    int punch_add_store_address_4_74,
+
+    // stq_4_bits_addr_bits:40
+    long long punch_add_store_address_4_75,
+
+    // stq_4_bits_uop_mem_size:2
+    int punch_add_store_address_4_76,
+
+    // stq_4_bits_uop_rob_idx:5
+    int punch_add_store_address_4_77,
+
+    // (4):3
+    int punch_add_store_address_4_78,
+
+    // global_counter:64
+    long long punch_add_store_address_4_79
+)
+{
+}
+
+Punching signals for DPI: add_store_address_5...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.stq_5_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_5_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_5_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_5_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(5)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_store_address_5:
+extern "C" void add_store_address_5_DPI
+(
+    // io_hartid:1
+    int punch_add_store_address_5_81,
+
+    // stq_5_bits_addr_bits:40
+    long long punch_add_store_address_5_82,
+
+    // stq_5_bits_uop_mem_size:2
+    int punch_add_store_address_5_83,
+
+    // stq_5_bits_uop_rob_idx:5
+    int punch_add_store_address_5_84,
+
+    // (5):3
+    int punch_add_store_address_5_85,
+
+    // global_counter:64
+    long long punch_add_store_address_5_86
+)
+{
+}
+
+Punching signals for DPI: add_store_address_6...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.stq_6_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_6_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_6_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_6_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(6)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_store_address_6:
+extern "C" void add_store_address_6_DPI
+(
+    // io_hartid:1
+    int punch_add_store_address_6_88,
+
+    // stq_6_bits_addr_bits:40
+    long long punch_add_store_address_6_89,
+
+    // stq_6_bits_uop_mem_size:2
+    int punch_add_store_address_6_90,
+
+    // stq_6_bits_uop_rob_idx:5
+    int punch_add_store_address_6_91,
+
+    // (6):3
+    int punch_add_store_address_6_92,
+
+    // global_counter:64
+    long long punch_add_store_address_6_93
+)
+{
+}
+
+Punching signals for DPI: add_store_address_7...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.stq_7_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_7_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_7_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_7_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(7)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_store_address_7:
+extern "C" void add_store_address_7_DPI
+(
+    // io_hartid:1
+    int punch_add_store_address_7_95,
+
+    // stq_7_bits_addr_bits:40
+    long long punch_add_store_address_7_96,
+
+    // stq_7_bits_uop_mem_size:2
+    int punch_add_store_address_7_97,
+
+    // stq_7_bits_uop_rob_idx:5
+    int punch_add_store_address_7_98,
+
+    // (7):3
+    int punch_add_store_address_7_99,
+
+    // global_counter:64
+    long long punch_add_store_address_7_100
+)
+{
+}
+
+Punching signals for DPI: add_load_address_0...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_0_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_0_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_0_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_0_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(0)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_load_address_0:
+extern "C" void add_load_address_0_DPI
+(
+    // io_hartid:1
+    int punch_add_load_address_0_102,
+
+    // ldq_0_bits_addr_bits:40
+    long long punch_add_load_address_0_103,
+
+    // ldq_0_bits_uop_mem_size:2
+    int punch_add_load_address_0_104,
+
+    // ldq_0_bits_uop_rob_idx:5
+    int punch_add_load_address_0_105,
+
+    // (0):3
+    int punch_add_load_address_0_106,
+
+    // global_counter:64
+    long long punch_add_load_address_0_107
+)
+{
+}
+
+Punching signals for DPI: add_load_address_1...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_1_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_1_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_1_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_1_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(1)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_load_address_1:
+extern "C" void add_load_address_1_DPI
+(
+    // io_hartid:1
+    int punch_add_load_address_1_109,
+
+    // ldq_1_bits_addr_bits:40
+    long long punch_add_load_address_1_110,
+
+    // ldq_1_bits_uop_mem_size:2
+    int punch_add_load_address_1_111,
+
+    // ldq_1_bits_uop_rob_idx:5
+    int punch_add_load_address_1_112,
+
+    // (1):3
+    int punch_add_load_address_1_113,
+
+    // global_counter:64
+    long long punch_add_load_address_1_114
+)
+{
+}
+
+Punching signals for DPI: add_load_address_2...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_2_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_2_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_2_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_2_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(2)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_load_address_2:
+extern "C" void add_load_address_2_DPI
+(
+    // io_hartid:1
+    int punch_add_load_address_2_116,
+
+    // ldq_2_bits_addr_bits:40
+    long long punch_add_load_address_2_117,
+
+    // ldq_2_bits_uop_mem_size:2
+    int punch_add_load_address_2_118,
+
+    // ldq_2_bits_uop_rob_idx:5
+    int punch_add_load_address_2_119,
+
+    // (2):3
+    int punch_add_load_address_2_120,
+
+    // global_counter:64
+    long long punch_add_load_address_2_121
+)
+{
+}
+
+Punching signals for DPI: add_load_address_3...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_3_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_3_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_3_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_3_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(3)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_load_address_3:
+extern "C" void add_load_address_3_DPI
+(
+    // io_hartid:1
+    int punch_add_load_address_3_123,
+
+    // ldq_3_bits_addr_bits:40
+    long long punch_add_load_address_3_124,
+
+    // ldq_3_bits_uop_mem_size:2
+    int punch_add_load_address_3_125,
+
+    // ldq_3_bits_uop_rob_idx:5
+    int punch_add_load_address_3_126,
+
+    // (3):3
+    int punch_add_load_address_3_127,
+
+    // global_counter:64
+    long long punch_add_load_address_3_128
+)
+{
+}
+
+Punching signals for DPI: add_load_address_4...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_4_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_4_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_4_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_4_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(4)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_load_address_4:
+extern "C" void add_load_address_4_DPI
+(
+    // io_hartid:1
+    int punch_add_load_address_4_130,
+
+    // ldq_4_bits_addr_bits:40
+    long long punch_add_load_address_4_131,
+
+    // ldq_4_bits_uop_mem_size:2
+    int punch_add_load_address_4_132,
+
+    // ldq_4_bits_uop_rob_idx:5
+    int punch_add_load_address_4_133,
+
+    // (4):3
+    int punch_add_load_address_4_134,
+
+    // global_counter:64
+    long long punch_add_load_address_4_135
+)
+{
+}
+
+Punching signals for DPI: add_load_address_5...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_5_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_5_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_5_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_5_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(5)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_load_address_5:
+extern "C" void add_load_address_5_DPI
+(
+    // io_hartid:1
+    int punch_add_load_address_5_137,
+
+    // ldq_5_bits_addr_bits:40
+    long long punch_add_load_address_5_138,
+
+    // ldq_5_bits_uop_mem_size:2
+    int punch_add_load_address_5_139,
+
+    // ldq_5_bits_uop_rob_idx:5
+    int punch_add_load_address_5_140,
+
+    // (5):3
+    int punch_add_load_address_5_141,
+
+    // global_counter:64
+    long long punch_add_load_address_5_142
+)
+{
+}
+
+Punching signals for DPI: add_load_address_6...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_6_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_6_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_6_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_6_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(6)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_load_address_6:
+extern "C" void add_load_address_6_DPI
+(
+    // io_hartid:1
+    int punch_add_load_address_6_144,
+
+    // ldq_6_bits_addr_bits:40
+    long long punch_add_load_address_6_145,
+
+    // ldq_6_bits_uop_mem_size:2
+    int punch_add_load_address_6_146,
+
+    // ldq_6_bits_uop_rob_idx:5
+    int punch_add_load_address_6_147,
+
+    // (6):3
+    int punch_add_load_address_6_148,
+
+    // global_counter:64
+    long long punch_add_load_address_6_149
+)
+{
+}
+
+Punching signals for DPI: add_load_address_7...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_7_bits_addr_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_7_bits_addr_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_7_bits_uop_mem_size
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.ldq_7_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(7)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_load_address_7:
+extern "C" void add_load_address_7_DPI
+(
+    // io_hartid:1
+    int punch_add_load_address_7_151,
+
+    // ldq_7_bits_addr_bits:40
+    long long punch_add_load_address_7_152,
+
+    // ldq_7_bits_uop_mem_size:2
+    int punch_add_load_address_7_153,
+
+    // ldq_7_bits_uop_rob_idx:5
+    int punch_add_load_address_7_154,
+
+    // (7):3
+    int punch_add_load_address_7_155,
+
+    // global_counter:64
+    long long punch_add_load_address_7_156
+)
+{
+}
+
+Punching signals for DPI: i_perform_load...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.(io_core_exe_0_iresp_valid&(~io_core_exe_0_iresp_bits_uop_uses_stq))
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.io_core_exe_0_iresp_bits_data
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.io_core_exe_0_iresp_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for i_perform_load:
+extern "C" void i_perform_load_DPI
+(
+    // io_hartid:1
+    int punch_i_perform_load_158,
+
+    // io_core_exe_0_iresp_bits_data:64
+    long long punch_i_perform_load_159,
+
+    // io_core_exe_0_iresp_bits_uop_rob_idx:5
+    int punch_i_perform_load_160,
+
+    // global_counter:64
+    long long punch_i_perform_load_161
+)
+{
+}
+
+Punching signals for DPI: add_store_data...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.(stq_7_bits_data_valid|stq_6_bits_data_valid|stq_5_bits_data_valid|stq_4_bits_data_valid|stq_3_bits_data_valid|stq_2_bits_data_valid|stq_1_bits_data_valid|stq_0_bits_data_valid)
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.({stq_7_bits_data_valid,stq_6_bits_data_valid,stq_5_bits_data_valid,stq_4_bits_data_valid,stq_3_bits_data_valid,stq_2_bits_data_valid,stq_1_bits_data_valid,stq_0_bits_data_valid})
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_0_bits_data_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_1_bits_data_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_2_bits_data_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_3_bits_data_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_4_bits_data_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_5_bits_data_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_6_bits_data_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_7_bits_data_bits
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_0_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_1_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_2_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_3_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_4_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_5_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_6_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_7_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for add_store_data:
+extern "C" void add_store_data_DPI
+(
+    // io_hartid:1
+    int punch_add_store_data_162,
+
+    // ({stq_7_bits_data_valid,stq_6_bits_data_valid,stq_5_bits_data_valid,stq_4_bits_data_valid,stq_3_bits_data_valid,stq_2_bits_data_valid,stq_1_bits_data_valid,stq_0_bits_data_valid}):8
+    int punch_add_store_data_164,
+
+    // stq_0_bits_data_bits:64
+    long long punch_add_store_data_165,
+
+    // stq_1_bits_data_bits:64
+    long long punch_add_store_data_166,
+
+    // stq_2_bits_data_bits:64
+    long long punch_add_store_data_167,
+
+    // stq_3_bits_data_bits:64
+    long long punch_add_store_data_168,
+
+    // stq_4_bits_data_bits:64
+    long long punch_add_store_data_169,
+
+    // stq_5_bits_data_bits:64
+    long long punch_add_store_data_170,
+
+    // stq_6_bits_data_bits:64
+    long long punch_add_store_data_171,
+
+    // stq_7_bits_data_bits:64
+    long long punch_add_store_data_172,
+
+    // stq_0_bits_uop_rob_idx:5
+    int punch_add_store_data_173,
+
+    // stq_1_bits_uop_rob_idx:5
+    int punch_add_store_data_174,
+
+    // stq_2_bits_uop_rob_idx:5
+    int punch_add_store_data_175,
+
+    // stq_3_bits_uop_rob_idx:5
+    int punch_add_store_data_176,
+
+    // stq_4_bits_uop_rob_idx:5
+    int punch_add_store_data_177,
+
+    // stq_5_bits_uop_rob_idx:5
+    int punch_add_store_data_178,
+
+    // stq_6_bits_uop_rob_idx:5
+    int punch_add_store_data_179,
+
+    // stq_7_bits_uop_rob_idx:5
+    int punch_add_store_data_180,
+
+    // global_counter:64
+    long long punch_add_store_data_181
+)
+{
+}
+
+Punching signals for DPI: complete_store...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.lsu.((stq_0_bits_succeeded&~stq_0_bits_uop_is_amo)|(stq_1_bits_succeeded&~stq_1_bits_uop_is_amo)|(stq_2_bits_succeeded&~stq_2_bits_uop_is_amo)|(stq_3_bits_succeeded&~stq_3_bits_uop_is_amo)|(stq_4_bits_succeeded&~stq_4_bits_uop_is_amo)|(stq_5_bits_succeeded&~stq_5_bits_uop_is_amo)|(stq_6_bits_succeeded&~stq_6_bits_uop_is_amo)|(stq_7_bits_succeeded&~stq_7_bits_uop_is_amo))
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.({(stq_7_bits_succeeded&~stq_7_bits_uop_is_amo),(stq_6_bits_succeeded&~stq_6_bits_uop_is_amo),(stq_5_bits_succeeded&~stq_5_bits_uop_is_amo),(stq_4_bits_succeeded&~stq_4_bits_uop_is_amo),(stq_3_bits_succeeded&~stq_3_bits_uop_is_amo),(stq_2_bits_succeeded&~stq_2_bits_uop_is_amo),(stq_1_bits_succeeded&~stq_1_bits_uop_is_amo),(stq_0_bits_succeeded&~stq_0_bits_uop_is_amo)})
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_0_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_1_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_2_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_3_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_4_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_5_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_6_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: tile_reset_domain_boom_tile.lsu.stq_7_bits_uop_rob_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance lsu in module BoomTile
+Punching out: global_counter
+Suggested DPI function signature for complete_store:
+extern "C" void complete_store_DPI
+(
+    // io_hartid:1
+    int punch_complete_store_183,
+
+    // ({(stq_7_bits_succeeded&~stq_7_bits_uop_is_amo),(stq_6_bits_succeeded&~stq_6_bits_uop_is_amo),(stq_5_bits_succeeded&~stq_5_bits_uop_is_amo),(stq_4_bits_succeeded&~stq_4_bits_uop_is_amo),(stq_3_bits_succeeded&~stq_3_bits_uop_is_amo),(stq_2_bits_succeeded&~stq_2_bits_uop_is_amo),(stq_1_bits_succeeded&~stq_1_bits_uop_is_amo),(stq_0_bits_succeeded&~stq_0_bits_uop_is_amo)}):8
+    int punch_complete_store_184,
+
+    // stq_0_bits_uop_rob_idx:5
+    int punch_complete_store_185,
+
+    // stq_1_bits_uop_rob_idx:5
+    int punch_complete_store_186,
+
+    // stq_2_bits_uop_rob_idx:5
+    int punch_complete_store_187,
+
+    // stq_3_bits_uop_rob_idx:5
+    int punch_complete_store_188,
+
+    // stq_4_bits_uop_rob_idx:5
+    int punch_complete_store_189,
+
+    // stq_5_bits_uop_rob_idx:5
+    int punch_complete_store_190,
+
+    // stq_6_bits_uop_rob_idx:5
+    int punch_complete_store_191,
+
+    // stq_7_bits_uop_rob_idx:5
+    int punch_complete_store_192,
+
+    // global_counter:64
+    long long punch_complete_store_193
+)
+{
+}
+
+Punching signals for DPI: commit_memop...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.core.rob.(io_commit_valids_0&(io_commit_uops_0_uses_ldq|io_commit_uops_0_uses_stq))
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance rob in module BoomCore
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.core.rob.com_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+ - Punching through instance rob in module BoomCore
+Punching out: global_counter
+Suggested DPI function signature for commit_memop:
+extern "C" void commit_memop_DPI
+(
+    // io_hartid:1
+    int punch_commit_memop_195,
+
+    // com_idx:5
+    int punch_commit_memop_196,
+
+    // global_counter:64
+    long long punch_commit_memop_197
+)
+{
+}
+
+Punching signals for DPI: update_cache_meta...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.dcache.metaWriteArb.io_out_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance dcache in module BoomTile
+ - Punching through instance metaWriteArb in module BoomNonBlockingDCache
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_way_en
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance dcache in module BoomTile
+ - Punching through instance metaWriteArb in module BoomNonBlockingDCache
+Punching out: tile_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_idx
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance dcache in module BoomTile
+ - Punching through instance metaWriteArb in module BoomNonBlockingDCache
+Punching out: tile_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_data_coh_state
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance dcache in module BoomTile
+ - Punching through instance metaWriteArb in module BoomNonBlockingDCache
+Punching out: tile_reset_domain_boom_tile.dcache.metaWriteArb.io_out_bits_data_tag
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance dcache in module BoomTile
+ - Punching through instance metaWriteArb in module BoomNonBlockingDCache
+Punching out: global_counter
+Suggested DPI function signature for update_cache_meta:
+extern "C" void update_cache_meta_DPI
+(
+    // io_hartid:1
+    int punch_update_cache_meta_199,
+
+    // io_out_bits_way_en:4
+    int punch_update_cache_meta_200,
+
+    // io_out_bits_idx:6
+    int punch_update_cache_meta_201,
+
+    // io_out_bits_data_coh_state:2
+    int punch_update_cache_meta_202,
+
+    // io_out_bits_data_tag:20
+    int punch_update_cache_meta_203,
+
+    // global_counter:64
+    long long punch_update_cache_meta_204
+)
+{
+}
+
+Punching signals for DPI: update_cache_data...
+Bringing signals from deeper hierarchy to: TilePRCIDomain.
+Punching out: tile_reset_domain_boom_tile.dcache.dataWriteArb.io_out_valid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance dcache in module BoomTile
+ - Punching through instance dataWriteArb in module BoomNonBlockingDCache
+Punching out: tile_reset_domain_boom_tile.core.io_hartid
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance core in module BoomTile
+Punching out: tile_reset_domain_boom_tile.dcache.dataWriteArb.io_out_bits_way_en
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance dcache in module BoomTile
+ - Punching through instance dataWriteArb in module BoomNonBlockingDCache
+Punching out: tile_reset_domain_boom_tile.dcache.dataWriteArb.io_out_bits_addr
+ - Punching through instance tile_reset_domain_boom_tile in module TilePRCIDomain
+ - Punching through instance dcache in module BoomTile
+ - Punching through instance dataWriteArb in module BoomNonBlockingDCache
+Punching out: global_counter
+Suggested DPI function signature for update_cache_data:
+extern "C" void update_cache_data_DPI
+(
+    // io_hartid:1
+    int punch_update_cache_data_206,
+
+    // io_out_bits_way_en:4
+    int punch_update_cache_data_207,
+
+    // io_out_bits_addr:12
+    int punch_update_cache_data_208,
+
+    // global_counter:64
+    long long punch_update_cache_data_209
+)
+{
+}
+
