@@ -47,6 +47,7 @@ int main() {
     d3.add_newer(d2);
 
     d3.dump();
+    std::cout << std::endl;
 
     return 0;
 }
