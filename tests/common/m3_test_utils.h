@@ -1,10 +1,6 @@
 #ifndef M3_TEST_UTILS_H
 #define M3_TEST_UTILS_H
 
-// -----------------------------------------------------------------------------
-// Compatibility layer for the new (2025) M3 implementation
-// -----------------------------------------------------------------------------
-
 #include <cstdint>
 
 // Stub out the old 'debug' helpers that the legacy tests expect.
@@ -13,7 +9,6 @@ namespace debug {
     enum class ExecutionMode  { Testing, Simulation };
 }
 
-// Bring in the modern M3 headers.
 #include "../src/bridges/bridge_boom/state.h"
 #include "m3/memory_marionette.hpp"
 #include "m3/memory.hpp"
@@ -46,12 +41,10 @@ using namespace m3;
 namespace m3_test_utils {
     static const uint32_t kMesiMState = 3;
 
-    // Legacy helper prototypes ------------------------------------------------
     void setup(uint32_t ncores,
                debug::VerbosityLevel level,
                debug::ExecutionMode mode);
 
-    // Test-personalised calls --------------------------------------------------
     void create_memop_inorder_test(int hart_id, int rob_id, MemopType memop,
                                    long long global_clock,
                                    m3::AmoType amotype = m3::AmoType::kUndefined);
@@ -79,7 +72,6 @@ namespace m3_test_utils {
     int rob_recovery_test(int hart_id, int rob_head, int rob_id,
                           long long global_counter);
 
-    // Spike-style helpers ------------------------------------------------------
     void no_ins_store_spike(int hart_id, int rob_id, long long memop_address,
                             long long stq_data, int len);
     uint64_t no_ins_load_spike(int hart_id, int rob_id,

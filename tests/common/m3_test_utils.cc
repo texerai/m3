@@ -4,19 +4,14 @@
 #include <string>
 #include <cassert>
 
-// Old dependency headers replaced by modern ones
 #include "m3_test_utils.h"
 #include "utils/rvutils.h"
 
-// -----------------------------------------------------------------------------
-// Stubs for legacy DEBUG macros (now no-ops) ----------------------------------
-// -----------------------------------------------------------------------------
+// Stubs for legacy DEBUG macros (now no-ops)
 #define DEBUG_LOG(msg, lvl)   do { (void)(msg); } while (0)
 #define DEBUG_ASSERT(cond, msg) assert(cond)
 
-// -----------------------------------------------------------------------------
-// Global singletons shared by all tests ---------------------------------------
-// -----------------------------------------------------------------------------
+// Global singletons shared by all tests
 namespace m3 {
     Memory       global_mem([](uint64_t) { return 0; });
     State*       state      = nullptr;
@@ -25,13 +20,9 @@ namespace m3 {
 using namespace m3;
 using namespace m3_test_utils;
 
-// -----------------------------------------------------------------------------
-// Legacy helpers rewritten on top of modern MemoryMarionette -------------------
-// -----------------------------------------------------------------------------
 
 namespace m3_test_utils {
 
-//---------------------------------------------------------------------------
 void setup(uint32_t ncores,
            debug::VerbosityLevel /*level*/, debug::ExecutionMode /*mode*/) {
     if (m3::state) return;  // already initialised
@@ -42,7 +33,6 @@ void setup(uint32_t ncores,
     }
 }
 
-//---------------------------------------------------------------------------
 void create_memop_inorder_test(int hart_id, int rob_id, MemopType memop,
                                long long /*global_clock*/, AmoType /*amotype*/) {
     M3Cores &cores = state->m3cores;
@@ -56,7 +46,6 @@ void create_memop_inorder_test(int hart_id, int rob_id, MemopType memop,
     info.rob_id      = rob_id;
 }
 
-//---------------------------------------------------------------------------
 void add_memop_address_test(int hart_id, long long addr, int sz, int rob_id,
                             long long /*global_clock*/) {
     M3Cores &cores = state->m3cores;
@@ -89,7 +78,6 @@ void add_memop_address_test(int hart_id, long long addr, int sz, int rob_id,
     }
 }
 
-//---------------------------------------------------------------------------
 uint64_t i_perform_load_test(int hart_id, long long /*load_data*/, int rob_id,
                              long long /*global_clock*/) {
     M3Cores &cores = state->m3cores;
@@ -101,7 +89,6 @@ uint64_t i_perform_load_test(int hart_id, long long /*load_data*/, int rob_id,
     return d.get_data(info.address, info.size);
 }
 
-//---------------------------------------------------------------------------
 void add_store_data_test(int hart_id, long long data, int rob_id,
                          long long /*global_clock*/) {
     M3Cores &cores = state->m3cores;
@@ -120,10 +107,8 @@ void add_store_data_test(int hart_id, long long data, int rob_id,
     }
 }
 
-//---------------------------------------------------------------------------
 void send_dcache_amo_test(int /*hart_id*/, int /*amo_rob_id*/, long long /*gc*/) {}
 
-//---------------------------------------------------------------------------
 void commit_memop_test(int hart_id, int rob_id, int /*store_buffer_id*/,
                        long long /*global_clock*/, int /*xcpt*/) {
     M3Cores &cores = state->m3cores;
@@ -140,11 +125,9 @@ void commit_memop_test(int hart_id, int rob_id, int /*store_buffer_id*/,
     }
 }
 
-//---------------------------------------------------------------------------
 void complete_store_test(int, int, long long) {}
 void complete_amo_test(int, int, long long)  {}
 
-//---------------------------------------------------------------------------
 void update_cache_meta_test(int hart_id, int way_id, int line_id,
                             int new_state, int tag,
                             long long /*gc*/) {
@@ -162,14 +145,12 @@ void update_cache_meta_test(int hart_id, int way_id, int line_id,
 
 void update_cache_data_test(int, int, int, long long) {}
 
-//---------------------------------------------------------------------------
 int rob_recovery_test(int /*hart_id*/, int /*rob_head*/, int rob_id,
                       long long /*gc*/) {
     // Simplified: return the recovered ROB entry id directly.
     return rob_id;
 }
 
-//---------------------------------------------------------------------------
 void no_ins_store_spike(int /*hart_id*/, int /*rob_id*/, long long addr,
                         long long data, int len) {
     Data d;
