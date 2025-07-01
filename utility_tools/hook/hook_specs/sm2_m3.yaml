@@ -572,6 +572,8 @@
         port_size: 1
       - path: element_reset_domain_boom_tile.lsu.({(stq_7_bits_succeeded&~stq_7_bits_uop_is_amo),(stq_6_bits_succeeded&~stq_6_bits_uop_is_amo),(stq_5_bits_succeeded&~stq_5_bits_uop_is_amo),(stq_4_bits_succeeded&~stq_4_bits_uop_is_amo),(stq_3_bits_succeeded&~stq_3_bits_uop_is_amo),(stq_2_bits_succeeded&~stq_2_bits_uop_is_amo),(stq_1_bits_succeeded&~stq_1_bits_uop_is_amo),(stq_0_bits_succeeded&~stq_0_bits_uop_is_amo)})
         port_size: 8
+      - path: element_reset_domain_boom_tile.lsu.({stq_7_valid,stq_6_valid,stq_5_valid,stq_4_valid,stq_3_valid,stq_2_valid,stq_1_valid,stq_0_valid})
+        port_size: 8
       - path: element_reset_domain_boom_tile.lsu.stq_0_bits_uop_rob_idx
         port_size: 5
       - path: element_reset_domain_boom_tile.lsu.stq_1_bits_uop_rob_idx
