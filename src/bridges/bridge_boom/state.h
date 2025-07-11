@@ -75,6 +75,7 @@ namespace m3
             store_succeeded = false;
             committed = false;
             address = 0;
+            is_just_created = true;
         }
     };
 

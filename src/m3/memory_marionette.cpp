@@ -44,7 +44,7 @@ namespace m3
             pnr = iid;
     }
 
-    void MemoryMarionette::nuke(Inst_id iid) {
+    void MemoryMarionette::nuke(Inst_id iid, std::set<Inst_id>& removed_ids) {
         if (iid < pnr) {
             // FIXME: Notifier::fail("nuke id:{} for already safe pnr:{}", iid, pnr);
             dump();
@@ -59,6 +59,7 @@ namespace m3
             std::cout << "nuke: rid:" << e.rid << " error:" << e.error << "\n";
             e.dump("rob");
 
+            removed_ids.insert(e.rid);
             rob.pop_front();
             if (rob.empty())
                 return;

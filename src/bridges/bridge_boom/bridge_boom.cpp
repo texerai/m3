@@ -57,7 +57,18 @@ namespace m3
             // did not complete.
             if (!memop_info.committed && !memop_info.is_just_created)
             {
-                m3cores[data.hart_id].nuke(memop_info.m3id);
+                std::set<Inst_id> removed_ids;
+                m3cores[data.hart_id].nuke(memop_info.m3id, removed_ids);
+
+                // Clean up bridge state for all nuked m3ids
+                for (const auto& id : removed_ids) {
+                    auto& core_memops = state.in_core_memops[data.hart_id];
+                    for (auto it = core_memops.begin(); it != core_memops.end(); ++it) {
+                        if (it->second.m3id == id) {
+                            it->second.Invalidate();
+                        }
+                    }
+                }
             }
 
             // Drop the previous information.

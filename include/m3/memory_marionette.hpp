@@ -9,6 +9,7 @@
 #include <functional>
 #include <vector>
 #include <deque>
+#include <set>
 
 #include "m3/data.hpp"
 #include "m3/memory.hpp"
@@ -46,7 +47,7 @@ namespace m3
         * become safe. Spurious updates to ld_globally_perform, set_type will be
         * tolerated without side effects
         */
-        void nuke(Inst_id nuke_id);
+        void nuke(Inst_id nuke_id, std::set<Inst_id>& removed_ids);
 
         /** st_data_ref
         * Pointer to the Data for the stored data in this operation. May be
