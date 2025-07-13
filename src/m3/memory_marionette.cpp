@@ -189,7 +189,7 @@ namespace m3
 
             if (rob_it2->rid == iid1) {
                 assert(rob_it2 == rob_it1);
-                std::cout << "INFO: merging st iid: " << iid2 << "to st iid:" << iid1 << std::endl;
+                std::cout << "INFO: merging st iid: " << iid2 << " to st iid: " << iid1 << std::endl;
                 rob_it1->st_merge(d2);
                 rob.erase(std::find_if(rob.begin(), rob.end(), [&iid2](const Rob_entry &x) { return x.rid == iid2; }));
                 break;
