@@ -9,6 +9,7 @@
 #include <functional>
 #include <vector>
 #include <deque>
+#include <set>
 
 #include "m3/data.hpp"
 #include "m3/memory.hpp"
@@ -44,9 +45,20 @@ namespace m3
         * Any instructions between the nuke_id and the lastest instid is
         * flushed/discarded from the pipeline. Those instructions should never
         * become safe. Spurious updates to ld_globally_perform, set_type will be
-        * tolerated without side effects
+        * tolerated without side effects.
+        * @param nuke_id Entries with `rid >= nuke_id` are removed.
         */
         void nuke(Inst_id nuke_id);
+
+        /** nuke
+        * Any instructions between the nuke_id and the lastest instid is
+        * flushed/discarded from the pipeline. Those instructions should never
+        * become safe. Spurious updates to ld_globally_perform, set_type will be
+        * tolerated without side effects.
+        * @param nuke_id Entries with `rid >= nuke_id` are removed.
+        * @param removed_ids Set populated with the IDs of the flushed entries.
+        */
+        void nuke(Inst_id nuke_id, std::set<Inst_id>& removed_ids);
 
         /** st_data_ref
         * Pointer to the Data for the stored data in this operation. May be
