@@ -66,6 +66,11 @@ namespace m3
         }
     }
 
+    void MemoryMarionette::nuke(Inst_id iid) {
+        std::set<Inst_id> dummy;
+        nuke(iid, dummy);
+    }
+
     MemoryMarionette::Rob_entry &MemoryMarionette::find_entry(Inst_id iid) {
         auto rob_it = std::find_if(rob.begin(), rob.end(), [&iid](const Rob_entry &x) { return x.rid == iid; });
 

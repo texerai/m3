@@ -45,7 +45,18 @@ namespace m3
         * Any instructions between the nuke_id and the lastest instid is
         * flushed/discarded from the pipeline. Those instructions should never
         * become safe. Spurious updates to ld_globally_perform, set_type will be
-        * tolerated without side effects
+        * tolerated without side effects.
+        * @param nuke_id Entries with `rid >= nuke_id` are removed.
+        */
+        void nuke(Inst_id nuke_id);
+
+        /** nuke
+        * Any instructions between the nuke_id and the lastest instid is
+        * flushed/discarded from the pipeline. Those instructions should never
+        * become safe. Spurious updates to ld_globally_perform, set_type will be
+        * tolerated without side effects.
+        * @param nuke_id Entries with `rid >= nuke_id` are removed.
+        * @param removed_ids Set populated with the IDs of the flushed entries.
         */
         void nuke(Inst_id nuke_id, std::set<Inst_id>& removed_ids);
 
