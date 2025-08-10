@@ -54,15 +54,13 @@ namespace m3
         if (rob.empty())
             return;
 
-        while (rob.front().rid >= iid) {
+        while (!rob.empty()) {
             const auto &e = rob.front();
             std::cout << "nuke: rid:" << e.rid << " error:" << e.error << "\n";
             e.dump("rob");
 
             removed_ids.insert(e.rid);
             rob.pop_front();
-            if (rob.empty())
-                return;
         }
     }
 

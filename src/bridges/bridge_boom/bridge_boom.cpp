@@ -43,6 +43,9 @@ namespace m3
     // Global state.
     static State state;
 
+    // Track the last created m3id for each hart.
+    static std::map<uint32_t, uint64_t> last_created_m3ids;
+
     // Define bridge functions under this namespace.
     namespace commands
     {
@@ -57,18 +60,7 @@ namespace m3
             // did not complete.
             if (!memop_info.committed && !memop_info.is_just_created)
             {
-                std::set<Inst_id> removed_ids;
-                m3cores[data.hart_id].nuke(memop_info.m3id, removed_ids);
 
-                // Clean up bridge state for all nuked m3ids
-                for (const auto& id : removed_ids) {
-                    auto& core_memops = state.in_core_memops[data.hart_id];
-                    for (auto it = core_memops.begin(); it != core_memops.end(); ++it) {
-                        if (it->second.m3id == id) {
-                            it->second.Invalidate();
-                        }
-                    }
-                }
             }
 
             // Drop the previous information.
@@ -80,6 +72,8 @@ namespace m3
             memop_info.rob_id = data.rob_id;
             memop_info.instruction = data.rv_instruction;
             memop_info.load_dest_reg = RVUtils::get_destination_from_load(data.rv_instruction);
+
+            last_created_m3ids[data.hart_id] = memop_info.m3id;
 
             // Double check the memop type.
             if (data.is_amo)
@@ -307,6 +301,25 @@ namespace m3
             return is_success;
         }
 
+        static bool FlushRob(const RtlHookData& data, State& state)
+        {
+            M3Cores& m3cores = state.m3cores;
+
+            std::set<Inst_id> removed_ids;
+            m3cores[data.hart_id].nuke(last_created_m3ids[data.hart_id], removed_ids);
+
+            for (const auto& id : removed_ids) {
+                auto& core_memops = state.in_core_memops[data.hart_id];
+                for (auto it = core_memops.begin(); it != core_memops.end(); ++it) {
+                    if (it->second.m3id == id) {
+                        it->second.Invalidate();
+                    }
+                }
+            }
+
+            return true;
+        }
+
         static bool UpdateCachelineData(const RtlHookData& data, State& state)
         {
             M3Cores& m3cores = state.m3cores;
@@ -375,6 +388,7 @@ namespace m3
             { RtlHook::kAddMemopAddress,      AddAddress },
             { RtlHook::kAddStoreData,         AddStoreData },
             { RtlHook::kPerformLoad,          PerformLoad },
+            { RtlHook::kFlushRob,             FlushRob },
             { RtlHook::kUpdateCacheLineData,  UpdateCachelineData },
             { RtlHook::kUpdateCacheLineState, UpdateCachelineState }
         };
