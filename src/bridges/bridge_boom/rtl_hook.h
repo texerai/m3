@@ -23,6 +23,7 @@ namespace m3
         kCompleteStore,
         kCommitMemop,
         kFlushRob,
+        kBranchMispredict,
         kUpdateCacheLineState,
         kUpdateCacheLineData
     };
@@ -37,7 +38,8 @@ namespace m3
         { RtlHook::kAddStoreData, 0 },
         { RtlHook::kCompleteStore, 0 },
         { RtlHook::kCommitMemop, 0 },
-        { RtlHook::kFlushRob, 0},
+        { RtlHook::kFlushRob, 0 },
+        { RtlHook::kBranchMispredict, 0 },
         { RtlHook::kUpdateCacheLineState, 0 },
         { RtlHook::kUpdateCacheLineData, 0 }
     };

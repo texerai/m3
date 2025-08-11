@@ -57,8 +57,9 @@ namespace m3
         * tolerated without side effects.
         * @param nuke_id Entries with `rid >= nuke_id` are removed.
         * @param removed_ids Set populated with the IDs of the flushed entries.
+        * @param is_flush If true, remove all entries from the reorder buffer.
         */
-        void nuke(Inst_id nuke_id, std::set<Inst_id>& removed_ids);
+        void nuke(Inst_id nuke_id, std::set<Inst_id>& removed_ids, bool is_flush);
 
         /** st_data_ref
         * Pointer to the Data for the stored data in this operation. May be

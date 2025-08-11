@@ -4,6 +4,7 @@
  */
 
 #include "m3/memory_marionette.hpp"
+#include <cstddef>
 #include <cstdio>
 #include <cassert>
 
@@ -44,7 +45,7 @@ namespace m3
             pnr = iid;
     }
 
-    void MemoryMarionette::nuke(Inst_id iid, std::set<Inst_id>& removed_ids) {
+    void MemoryMarionette::nuke(Inst_id iid, std::set<Inst_id>& removed_ids, bool is_flush) {
         if (iid < pnr) {
             // FIXME: Notifier::fail("nuke id:{} for already safe pnr:{}", iid, pnr);
             dump();
@@ -54,7 +55,11 @@ namespace m3
         if (rob.empty())
             return;
 
-        while (!rob.empty()) {
+        auto should_remove = [&](const auto& e) {
+            return is_flush || e.rid >= iid;
+        };
+
+        while (!rob.empty() && should_remove(rob.front())) {
             const auto &e = rob.front();
             std::cout << "nuke: rid:" << e.rid << " error:" << e.error << "\n";
             e.dump("rob");
@@ -66,7 +71,7 @@ namespace m3
 
     void MemoryMarionette::nuke(Inst_id iid) {
         std::set<Inst_id> dummy;
-        nuke(iid, dummy);
+        nuke(iid, dummy, NULL);
     }
 
     MemoryMarionette::Rob_entry &MemoryMarionette::find_entry(Inst_id iid) {

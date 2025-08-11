@@ -37,6 +37,7 @@ namespace m3
             {"kCompleteStore", RtlHook::kCompleteStore},
             {"kCommitMemop", RtlHook::kCommitMemop},
             {"kFlushRob", RtlHook::kFlushRob},
+            {"kBranchMispredict", RtlHook::kBranchMispredict},
             {"kUpdateCacheLineState", RtlHook::kUpdateCacheLineState},
             {"kUpdateCacheLineData", RtlHook::kUpdateCacheLineData}
         };
