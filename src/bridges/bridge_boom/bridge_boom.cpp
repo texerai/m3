@@ -43,6 +43,9 @@ namespace m3
     // Global state.
     static State state;
 
+    static std::unordered_map<uint32_t, bool> branchPredStarted;
+    static std::unordered_map<uint32_t, uint64_t> m3idAfterBranch;
+
     // Define bridge functions under this namespace.
     namespace commands
     {
@@ -69,6 +72,12 @@ namespace m3
             memop_info.rob_id = data.rob_id;
             memop_info.instruction = data.rv_instruction;
             memop_info.load_dest_reg = RVUtils::get_destination_from_load(data.rv_instruction);
+
+            if (branchPredStarted[data.hart_id])
+            {
+                m3idAfterBranch[data.hart_id] = memop_info.m3id;
+                branchPredStarted[data.hart_id] = false;
+            }
 
             // Double check the memop type.
             if (data.is_amo)
@@ -319,7 +328,7 @@ namespace m3
             MemopInfo& memop_info = state.in_core_memops[data.hart_id][data.rob_id];
 
             std::set<Inst_id> removed_ids;
-            m3cores[data.hart_id].nuke(memop_info.m3id, removed_ids, false);
+            m3cores[data.hart_id].nuke(m3idAfterBranch[data.hart_id], removed_ids, false);
 
             for (const auto& id : removed_ids) {
                 auto& core_memops = state.in_core_memops[data.hart_id];
@@ -328,6 +337,12 @@ namespace m3
                         it->second.Invalidate();
                 }
             }
+            return true;
+        }
+
+        static bool BranchPredictionStart(const RtlHookData& data, State& state)
+        {
+            branchPredStarted[data.hart_id] = true;
             return true;
         }
 
@@ -393,16 +408,17 @@ namespace m3
         }
 
         static std::map<RtlHook, std::function<bool(const RtlHookData&, State&)>> kRtlHookCommands = {
-            { RtlHook::kCreateMemop,          CreateMemop },
-            { RtlHook::kCompleteStore,        CompleteStore },
-            { RtlHook::kCommitMemop,          CommitMemop },
-            { RtlHook::kAddMemopAddress,      AddAddress },
-            { RtlHook::kAddStoreData,         AddStoreData },
-            { RtlHook::kPerformLoad,          PerformLoad },
-            { RtlHook::kFlushRob,             FlushRob },
-            { RtlHook::kBranchMispredict,     BranchMispredict },
-            { RtlHook::kUpdateCacheLineData,  UpdateCachelineData },
-            { RtlHook::kUpdateCacheLineState, UpdateCachelineState }
+            { RtlHook::kCreateMemop,            CreateMemop },
+            { RtlHook::kCompleteStore,          CompleteStore },
+            { RtlHook::kCommitMemop,            CommitMemop },
+            { RtlHook::kAddMemopAddress,        AddAddress },
+            { RtlHook::kAddStoreData,           AddStoreData },
+            { RtlHook::kPerformLoad,            PerformLoad },
+            { RtlHook::kFlushRob,               FlushRob },
+            { RtlHook::kBranchMispredict,       BranchMispredict },
+            { RtlHook::kBranchPredictionStart,  BranchPredictionStart },
+            { RtlHook::kUpdateCacheLineData,    UpdateCachelineData },
+            { RtlHook::kUpdateCacheLineState,   UpdateCachelineState }
         };
     }
 
