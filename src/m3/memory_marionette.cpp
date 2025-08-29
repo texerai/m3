@@ -46,7 +46,7 @@ namespace m3
     }
 
     void MemoryMarionette::nuke(Inst_id iid, std::set<Inst_id>& removed_ids, bool is_flush) {
-        if (iid < pnr) {
+        if (iid < pnr && !is_flush) {
             // FIXME: Notifier::fail("nuke id:{} for already safe pnr:{}", iid, pnr);
             dump();
             return;

@@ -60,7 +60,8 @@ namespace m3
             // did not complete.
             if (!memop_info.committed && !memop_info.is_just_created)
             {
-                std::cout << "ALERT" << std::endl;
+                std::cout << "m3id: " << memop_info.m3id << std::endl;
+                std::cout << "CreateMemop: " << data.hart_id << " " << data.rob_id << " " << data.rv_instruction << " " << data.timestamp << std::endl;
             }
 
             // Drop the previous information.
@@ -319,16 +320,19 @@ namespace m3
                         it->second.Invalidate();
                 }
             }
+
+            // Reset any pending branch-tracking state on full flush.
+            branchPredStarted[data.hart_id] = false;
+            m3idAfterBranch[data.hart_id] = 0;
             return true;
         }
 
         static bool BranchMispredict(const RtlHookData& data, State& state)
         {
             M3Cores& m3cores = state.m3cores;
-            MemopInfo& memop_info = state.in_core_memops[data.hart_id][data.rob_id];
 
             std::set<Inst_id> removed_ids;
-            m3cores[data.hart_id].nuke(m3idAfterBranch[data.hart_id], removed_ids, false);
+            m3cores[data.hart_id].nuke(Inst_id(m3idAfterBranch[data.hart_id]), removed_ids, false);
 
             for (const auto& id : removed_ids) {
                 auto& core_memops = state.in_core_memops[data.hart_id];
@@ -337,6 +341,10 @@ namespace m3
                         it->second.Invalidate();
                 }
             }
+
+            // End the branch window regardless of whether we nuked anything.
+            branchPredStarted[data.hart_id] = false;
+            m3idAfterBranch[data.hart_id] = 0;
             return true;
         }
 
