@@ -55,11 +55,7 @@ namespace m3
         if (rob.empty())
             return;
 
-        auto should_remove = [&](const auto& e) {
-            return is_flush || e.rid >= iid;
-        };
-
-        while (!rob.empty() && should_remove(rob.front())) {
+        while (!rob.empty() && (is_flush || rob.front().rid >= iid)) {
             const auto &e = rob.front();
             std::cout << "nuke: rid:" << e.rid << " error:" << e.error << "\n";
             e.dump("rob");

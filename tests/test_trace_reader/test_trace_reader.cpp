@@ -100,6 +100,7 @@ namespace m3
                 else if (key == "hart_id") { hookData.hart_id = std::stoul(value); }
                 else if (key == "rob_id") { hookData.rob_id = std::stoul(value); }
                 else if (key == "rv_instruction") { hookData.rv_instruction = std::stoll(value); }
+                else if (key == "branch_mask") { hookData.branch_mask = std::stoul(value); }
                 else if (key == "memop_size") { hookData.memop_size = std::stoul(value); }
                 else if (key == "address") { hookData.address = std::stoull(value); }
                 else if (key == "memop_id") { hookData.memop_id = std::stoul(value); }

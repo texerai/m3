@@ -55,6 +55,7 @@ namespace m3
         uint32_t rob_id = 0;
         uint32_t memop_size = 0;
         uint32_t rv_instruction = 0;
+        uint32_t branch_mask = 0;
         uint64_t address = 0;
         uint32_t memop_id = 0;
         uint64_t load_rtl_data = 0;

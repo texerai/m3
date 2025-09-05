@@ -8,8 +8,8 @@
 // C++ libraries.
 #include <cassert>
 #include <memory>
-#include <unordered_map>
 #include <functional>
+#include <unordered_map>
 
 // Local libraries.
 #include "rtl_hook.h"
@@ -44,11 +44,21 @@ namespace m3
     static State state;
 
     static std::unordered_map<uint32_t, bool> branchPredStarted;
-    static std::unordered_map<uint32_t, uint64_t> m3idAfterBranch;
+    static std::unordered_map<uint32_t, std::map<uint32_t, uint64_t>> brMaskToM3id;
 
     // Define bridge functions under this namespace.
     namespace commands
     {
+        static uint32_t msbPosition(uint32_t n)
+        {
+            uint32_t pos = 0;
+            while (n > 1) {
+                n >>= 1;
+                pos++;
+            }
+            return pos;
+        }
+
         static bool CreateMemop(const RtlHookData& data, State& state)
         {
             M3Cores& m3cores = state.m3cores;
@@ -76,7 +86,8 @@ namespace m3
 
             if (branchPredStarted[data.hart_id])
             {
-                m3idAfterBranch[data.hart_id] = memop_info.m3id;
+                uint32_t mask_msb_pos = msbPosition(data.branch_mask);
+                brMaskToM3id[data.hart_id][mask_msb_pos] = memop_info.m3id;
                 branchPredStarted[data.hart_id] = false;
             }
 
@@ -321,9 +332,6 @@ namespace m3
                 }
             }
 
-            // Reset any pending branch-tracking state on full flush.
-            branchPredStarted[data.hart_id] = false;
-            m3idAfterBranch[data.hart_id] = 0;
             return true;
         }
 
@@ -332,7 +340,9 @@ namespace m3
             M3Cores& m3cores = state.m3cores;
 
             std::set<Inst_id> removed_ids;
-            m3cores[data.hart_id].nuke(Inst_id(m3idAfterBranch[data.hart_id]), removed_ids, false);
+
+            uint32_t mask_msb_pos = msbPosition(data.branch_mask);
+            m3cores[data.hart_id].nuke(brMaskToM3id[data.hart_id][mask_msb_pos], removed_ids, false);
 
             for (const auto& id : removed_ids) {
                 auto& core_memops = state.in_core_memops[data.hart_id];
@@ -342,9 +352,6 @@ namespace m3
                 }
             }
 
-            // End the branch window regardless of whether we nuked anything.
-            branchPredStarted[data.hart_id] = false;
-            m3idAfterBranch[data.hart_id] = 0;
             return true;
         }
 
