@@ -38,6 +38,7 @@ namespace m3
             {"kCommitMemop", RtlHook::kCommitMemop},
             {"kFlushRob", RtlHook::kFlushRob},
             {"kBranchMispredict", RtlHook::kBranchMispredict},
+            {"kBranchResolve", RtlHook::kBranchResolve},
             {"kBranchPredictionStart", RtlHook::kBranchPredictionStart},
             {"kUpdateCacheLineState", RtlHook::kUpdateCacheLineState},
             {"kUpdateCacheLineData", RtlHook::kUpdateCacheLineData}

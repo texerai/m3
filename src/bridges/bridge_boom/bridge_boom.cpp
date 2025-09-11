@@ -43,15 +43,21 @@ namespace m3
     // Global state.
     static State state;
 
-    static std::unordered_map<uint32_t, bool> branchPredStarted;
-    static std::unordered_map<uint32_t, std::map<uint32_t, uint64_t>> brMaskToM3id;
+    // Tracks whether branch prediction has started for each hart.
+    static std::unordered_map<uint32_t, bool> branchPredictionStarted;
+
+    // Stores the current branch mask state for each hart.
+    static std::unordered_map<uint32_t, uint8_t> currentMask;
+
+    // Maps branch mask bit positions to M3 instruction IDs for mispredict recovery.
+    static std::unordered_map<uint32_t, std::map<uint32_t, uint64_t>> branchMaskToM3id;
 
     // Define bridge functions under this namespace.
     namespace commands
     {
-        static uint32_t msbPosition(uint32_t n)
+        static uint8_t msbPosition(uint8_t n)
         {
-            uint32_t pos = 0;
+            uint8_t pos = 0;
             while (n > 1) {
                 n >>= 1;
                 pos++;
@@ -70,8 +76,7 @@ namespace m3
             // did not complete.
             if (!memop_info.committed && !memop_info.is_just_created)
             {
-                std::cout << "m3id: " << memop_info.m3id << std::endl;
-                std::cout << "CreateMemop: " << data.hart_id << " " << data.rob_id << " " << data.rv_instruction << " " << data.timestamp << std::endl;
+                std::cout << "ALERT: Previous entry did not complete." << std::endl;
             }
 
             // Drop the previous information.
@@ -84,11 +89,13 @@ namespace m3
             memop_info.instruction = data.rv_instruction;
             memop_info.load_dest_reg = RVUtils::get_destination_from_load(data.rv_instruction);
 
-            if (branchPredStarted[data.hart_id])
+            if (branchPredictionStarted[data.hart_id])
             {
-                uint32_t mask_msb_pos = msbPosition(data.branch_mask);
-                brMaskToM3id[data.hart_id][mask_msb_pos] = memop_info.m3id;
-                branchPredStarted[data.hart_id] = false;
+                uint8_t new_mask = data.branch_mask;
+                uint8_t idx = msbPosition(currentMask[data.hart_id] ^ new_mask);
+                branchMaskToM3id[data.hart_id][idx] = memop_info.m3id;
+                branchPredictionStarted[data.hart_id] = false;
+                currentMask[data.hart_id] = new_mask;
             }
 
             // Double check the memop type.
@@ -332,6 +339,7 @@ namespace m3
                 }
             }
 
+            currentMask[data.hart_id] = 0;
             return true;
         }
 
@@ -341,8 +349,9 @@ namespace m3
 
             std::set<Inst_id> removed_ids;
 
-            uint32_t mask_msb_pos = msbPosition(data.branch_mask);
-            m3cores[data.hart_id].nuke(brMaskToM3id[data.hart_id][mask_msb_pos], removed_ids, false);
+            uint8_t mispredict_mask = data.branch_mask;
+            uint8_t idx = msbPosition(mispredict_mask);
+            m3cores[data.hart_id].nuke(branchMaskToM3id[data.hart_id][idx], removed_ids, false);
 
             for (const auto& id : removed_ids) {
                 auto& core_memops = state.in_core_memops[data.hart_id];
@@ -352,12 +361,20 @@ namespace m3
                 }
             }
 
+            currentMask[data.hart_id] = 0;
+            return true;
+        }
+
+        static bool BranchResolve(const RtlHookData& data, State& state)
+        {
+            uint8_t resolve_mask = data.branch_mask;
+            currentMask[data.hart_id] = currentMask[data.hart_id] ^ resolve_mask;
             return true;
         }
 
         static bool BranchPredictionStart(const RtlHookData& data, State& state)
         {
-            branchPredStarted[data.hart_id] = true;
+            branchPredictionStarted[data.hart_id] = true;
             return true;
         }
 
@@ -431,6 +448,7 @@ namespace m3
             { RtlHook::kPerformLoad,            PerformLoad },
             { RtlHook::kFlushRob,               FlushRob },
             { RtlHook::kBranchMispredict,       BranchMispredict },
+            { RtlHook::kBranchResolve,          BranchResolve },
             { RtlHook::kBranchPredictionStart,  BranchPredictionStart },
             { RtlHook::kUpdateCacheLineData,    UpdateCachelineData },
             { RtlHook::kUpdateCacheLineState,   UpdateCachelineState }
