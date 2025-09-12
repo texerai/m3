@@ -72,8 +72,7 @@ namespace m3
             // Get the entry.
             MemopInfo& memop_info = state.in_core_memops[data.hart_id][data.rob_id];
 
-            // Remove the entry from M3 if previously allocated entry
-            // did not complete.
+            // Check if the previously allocated entry completed.
             if (!memop_info.committed && !memop_info.is_just_created)
             {
                 std::cout << "ALERT: Previous entry did not complete." << std::endl;
