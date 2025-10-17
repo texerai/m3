@@ -18,6 +18,7 @@ void printRawHookData(const m3::RtlHookData& data, const std::string& label)
     std::cout << "  hart_id         : " << data.hart_id << std::endl;
     std::cout << "  rob_id          : " << data.rob_id << std::endl;
     std::cout << "  rv_instruction  : " << data.rv_instruction << std::endl;
+    std::cout << "  branch_mask     : " << data.branch_mask << std::endl;
     std::cout << "  memop_size      : " << data.memop_size << std::endl;
     std::cout << "  address         : " << data.address << std::endl;
     std::cout << "  memop_id        : " << data.memop_id << std::endl;

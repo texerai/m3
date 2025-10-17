@@ -8,8 +8,8 @@
 // C++ libraries.
 #include <cassert>
 #include <memory>
-#include <unordered_map>
 #include <functional>
+#include <unordered_map>
 
 // Local libraries.
 #include "rtl_hook.h"
@@ -43,9 +43,28 @@ namespace m3
     // Global state.
     static State state;
 
+    // Tracks whether branch prediction has started for each hart.
+    static std::unordered_map<uint32_t, bool> branchPredictionStarted;
+
+    // Stores the current branch mask state for each hart.
+    static std::unordered_map<uint32_t, uint8_t> currentMask;
+
+    // Maps branch mask bit positions to M3 instruction IDs for mispredict recovery.
+    static std::unordered_map<uint32_t, std::map<uint32_t, uint64_t>> branchMaskToM3id;
+
     // Define bridge functions under this namespace.
     namespace commands
     {
+        static uint8_t msbPosition(uint8_t n)
+        {
+            uint8_t pos = 0;
+            while (n > 1) {
+                n >>= 1;
+                pos++;
+            }
+            return pos;
+        }
+
         static bool CreateMemop(const RtlHookData& data, State& state)
         {
             M3Cores& m3cores = state.m3cores;
@@ -53,22 +72,10 @@ namespace m3
             // Get the entry.
             MemopInfo& memop_info = state.in_core_memops[data.hart_id][data.rob_id];
 
-            // Remove the entry from M3 if previously allocated entry
-            // did not complete.
+            // Check if the previously allocated entry completed.
             if (!memop_info.committed && !memop_info.is_just_created)
             {
-                std::set<Inst_id> removed_ids;
-                m3cores[data.hart_id].nuke(memop_info.m3id, removed_ids);
-
-                // Clean up bridge state for all nuked m3ids
-                for (const auto& id : removed_ids) {
-                    auto& core_memops = state.in_core_memops[data.hart_id];
-                    for (auto it = core_memops.begin(); it != core_memops.end(); ++it) {
-                        if (it->second.m3id == id) {
-                            it->second.Invalidate();
-                        }
-                    }
-                }
+                std::cout << "ALERT: Previous entry did not complete." << std::endl;
             }
 
             // Drop the previous information.
@@ -80,6 +87,15 @@ namespace m3
             memop_info.rob_id = data.rob_id;
             memop_info.instruction = data.rv_instruction;
             memop_info.load_dest_reg = RVUtils::get_destination_from_load(data.rv_instruction);
+
+            if (branchPredictionStarted[data.hart_id])
+            {
+                uint8_t new_mask = data.branch_mask;
+                uint8_t idx = msbPosition(currentMask[data.hart_id] ^ new_mask);
+                branchMaskToM3id[data.hart_id][idx] = memop_info.m3id;
+                branchPredictionStarted[data.hart_id] = false;
+                currentMask[data.hart_id] = new_mask;
+            }
 
             // Double check the memop type.
             if (data.is_amo)
@@ -307,6 +323,60 @@ namespace m3
             return is_success;
         }
 
+        static bool FlushRob(const RtlHookData& data, State& state)
+        {
+            M3Cores& m3cores = state.m3cores;
+
+            std::set<Inst_id> removed_ids;
+            m3cores[data.hart_id].nuke(0, removed_ids, true);
+
+            for (const auto& id : removed_ids) {
+                auto& core_memops = state.in_core_memops[data.hart_id];
+                for (auto it = core_memops.begin(); it != core_memops.end(); ++it) {
+                    if (it->second.m3id == id)
+                        it->second.Invalidate();
+                }
+            }
+
+            currentMask[data.hart_id] = 0;
+            return true;
+        }
+
+        static bool BranchMispredict(const RtlHookData& data, State& state)
+        {
+            M3Cores& m3cores = state.m3cores;
+
+            std::set<Inst_id> removed_ids;
+
+            uint8_t mispredict_mask = data.branch_mask;
+            uint8_t idx = msbPosition(mispredict_mask);
+            m3cores[data.hart_id].nuke(branchMaskToM3id[data.hart_id][idx], removed_ids, false);
+
+            for (const auto& id : removed_ids) {
+                auto& core_memops = state.in_core_memops[data.hart_id];
+                for (auto it = core_memops.begin(); it != core_memops.end(); ++it) {
+                    if (it->second.m3id == id)
+                        it->second.Invalidate();
+                }
+            }
+
+            currentMask[data.hart_id] = 0;
+            return true;
+        }
+
+        static bool BranchResolve(const RtlHookData& data, State& state)
+        {
+            uint8_t resolve_mask = data.branch_mask;
+            currentMask[data.hart_id] = currentMask[data.hart_id] ^ resolve_mask;
+            return true;
+        }
+
+        static bool BranchPredictionStart(const RtlHookData& data, State& state)
+        {
+            branchPredictionStarted[data.hart_id] = true;
+            return true;
+        }
+
         static bool UpdateCachelineData(const RtlHookData& data, State& state)
         {
             M3Cores& m3cores = state.m3cores;
@@ -369,14 +439,18 @@ namespace m3
         }
 
         static std::map<RtlHook, std::function<bool(const RtlHookData&, State&)>> kRtlHookCommands = {
-            { RtlHook::kCreateMemop,          CreateMemop },
-            { RtlHook::kCompleteStore,        CompleteStore },
-            { RtlHook::kCommitMemop,          CommitMemop },
-            { RtlHook::kAddMemopAddress,      AddAddress },
-            { RtlHook::kAddStoreData,         AddStoreData },
-            { RtlHook::kPerformLoad,          PerformLoad },
-            { RtlHook::kUpdateCacheLineData,  UpdateCachelineData },
-            { RtlHook::kUpdateCacheLineState, UpdateCachelineState }
+            { RtlHook::kCreateMemop,            CreateMemop },
+            { RtlHook::kCompleteStore,          CompleteStore },
+            { RtlHook::kCommitMemop,            CommitMemop },
+            { RtlHook::kAddMemopAddress,        AddAddress },
+            { RtlHook::kAddStoreData,           AddStoreData },
+            { RtlHook::kPerformLoad,            PerformLoad },
+            { RtlHook::kFlushRob,               FlushRob },
+            { RtlHook::kBranchMispredict,       BranchMispredict },
+            { RtlHook::kBranchResolve,          BranchResolve },
+            { RtlHook::kBranchPredictionStart,  BranchPredictionStart },
+            { RtlHook::kUpdateCacheLineData,    UpdateCachelineData },
+            { RtlHook::kUpdateCacheLineState,   UpdateCachelineState }
         };
     }
 

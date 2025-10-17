@@ -22,6 +22,10 @@ namespace m3
         kAddStoreData,
         kCompleteStore,
         kCommitMemop,
+        kFlushRob,
+        kBranchMispredict,
+        kBranchResolve,
+        kBranchPredictionStart,
         kUpdateCacheLineState,
         kUpdateCacheLineData
     };
@@ -36,6 +40,10 @@ namespace m3
         { RtlHook::kAddStoreData, 0 },
         { RtlHook::kCompleteStore, 0 },
         { RtlHook::kCommitMemop, 0 },
+        { RtlHook::kFlushRob, 0 },
+        { RtlHook::kBranchMispredict, 0 },
+        { RtlHook::kBranchResolve, 0 },
+        { RtlHook::kBranchPredictionStart, 0 },
         { RtlHook::kUpdateCacheLineState, 0 },
         { RtlHook::kUpdateCacheLineData, 0 }
     };
@@ -49,6 +57,7 @@ namespace m3
         uint32_t rob_id = 0;
         uint32_t memop_size = 0;
         uint32_t rv_instruction = 0;
+        uint32_t branch_mask = 0;
         uint64_t address = 0;
         uint32_t memop_id = 0;
         uint64_t load_rtl_data = 0;
