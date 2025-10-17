@@ -138,6 +138,8 @@
         port_size: 2
       - path: element_reset_domain_boom_tile.core.rob.io_enq_uops_0_debug_inst
         port_size: 32
+      - path: element_reset_domain_boom_tile.core.rob.io_enq_uops_0_br_mask
+        port_size: 8
       - path: global_counter
         port_size: 64
 
@@ -646,5 +648,83 @@
         port_size: 4
       - path: element_reset_domain_boom_tile.dcache.dataWriteArb.io_out_bits_addr
         port_size: 12
+      - path: global_counter
+        port_size: 64
+
+- punch_name: flush_rob # Flush ROB events.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.rob.io_flush_valid
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.rob.io_rob_head_idx
+        port_size: 5
+      - path: global_counter
+        port_size: 64
+
+- punch_name: branch_mispredict # Branch mispredict causing ROB flush.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.rob.io_brupdate_b2_mispredict
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.rob.io_brupdate_b2_uop_rob_idx
+        port_size: 5
+      - path: global_counter
+        port_size: 64
+
+- punch_name: branch_prediction_start # Branch prediction start.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.rob.(io_enq_valids_0&io_enq_uops_0_is_br)
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: global_counter
+        port_size: 64
+
+- punch_name: capture_b1_mask # Capture B1 mispredict mask when valid.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.rob.(|io_brupdate_b1_mispredict_mask)
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.rob.io_brupdate_b1_mispredict_mask
+        port_size: 8
+      - path: global_counter
+        port_size: 64
+
+- punch_name: branch_resolve # Branch resolve event.
+  top_module: TilePRCIDomain
+  clock: auto_tap_clock_in_clock
+  reset: auto_tap_clock_in_reset
+  dpi_group: m3
+  hierarchy:
+      - path: element_reset_domain_boom_tile.core.rob.(|io_brupdate_b1_resolve_mask)
+        port_size: 1
+        type: trigger
+      - path: element_reset_domain_boom_tile.core.io_hartid
+        port_size: 1
+      - path: element_reset_domain_boom_tile.core.rob.io_brupdate_b1_resolve_mask
+        port_size: 8
       - path: global_counter
         port_size: 64
