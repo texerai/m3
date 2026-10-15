@@ -67,7 +67,7 @@ namespace m3
 
     void MemoryMarionette::nuke(Inst_id iid) {
         std::set<Inst_id> dummy;
-        nuke(iid, dummy, NULL);
+        nuke(iid, dummy, false);
     }
 
     MemoryMarionette::Rob_entry &MemoryMarionette::find_entry(Inst_id iid) {
@@ -148,15 +148,21 @@ namespace m3
 
         ++rob_it;  // Skip itself
 
+        const auto &st_data = ent.st_data;
         for (; rob_it != rob.rend(); ++rob_it) {
             if (!rob_it->ld_data.has_data())
                 continue;
             if (!rob_it->performed)
                 continue;
+            if (!rob_it->ld_data.has_partial_overlap(st_data))
+                continue;
 
+            // Only the bytes this store writes are its business: other
+            // bytes may legitimately have changed since the load performed
+            // (e.g. a store from another core became globally visible).
             auto ld_data_copy = rob_it->ld_data;
             ld_perform(rob_it->rid);  // perform again
-            if (ld_data_copy != rob_it->ld_data) {
+            if (!ld_data_copy.same_bytes_within(rob_it->ld_data, st_data)) {
                 std::cout << "WARNING: ld id:" << rob_it->rid << " performed but data changed\n";
                 rob_it->error = "store id:" + std::to_string(iid) + " changed value";
                 ld_data_copy.dump();
@@ -285,6 +291,13 @@ namespace m3
             return true;
 
         return !it->error.empty();
+    }
+
+    void MemoryMarionette::dump_oldest(size_t n) const {
+        std::cout << "core cid:" << cid << " pnr:" << pnr << " oldest of " << rob.size() << ":\n";
+        for (auto it = rob.rbegin(); it != rob.rend() && n > 0; ++it, --n) {
+            it->dump("rob");
+        }
     }
 
     void MemoryMarionette::dump() const {

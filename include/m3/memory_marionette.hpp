@@ -102,6 +102,16 @@ namespace m3
 
         bool has_error(Inst_id iid) const;
 
+        /** size
+        * Number of memory operations currently tracked (not yet retired)
+        */
+        size_t size() const { return rob.size(); }
+
+        /** dump_oldest
+        * print the n oldest tracked memory operations
+        */
+        void dump_oldest(size_t n) const;
+
         /** dump
         * print/dump the internal state
         */
