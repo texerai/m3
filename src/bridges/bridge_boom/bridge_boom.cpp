@@ -144,8 +144,12 @@ namespace m3
             auto it = per_hart.find(cache_line);
             if (it == per_hart.end())
             {
-                //assert(false);
-                std::cout << "Warning: changing cache line state, but M3 never seen it" << std::endl;
+                // Normal for lines that only ever served loads or fetches.
+                if (kBridgeDebug)
+                {
+                    std::cout << "bridge: hart " << hart_id << " owns line 0x" << std::hex << (cache_line << 6) << std::dec
+                              << " with no store pending on it" << std::endl;
+                }
                 return;
             }
 
