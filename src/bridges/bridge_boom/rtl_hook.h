@@ -42,12 +42,17 @@ namespace m3
     // the same id belong to the previous occupant of that ROB entry
     // (BOOM never produces address/data/completion in the enqueue
     // cycle), so CreateMemop runs last.
+    //
+    // A store's completion and the cache data write that makes it
+    // globally visible can land in the same cycle: the completion has to
+    // be registered first or the store stays pending until the line is
+    // touched again, and loads of its value on other harts look illegal.
     static std::map<RtlHook, uint32_t> kRtlHookPriority = {
-        { RtlHook::kAddMemopAddress, 3 },
-        { RtlHook::kAddStoreData, 3 },
-        { RtlHook::kPerformLoad, 2 },
-        { RtlHook::kCommitMemop, 1 },
-        { RtlHook::kCompleteStore, 0 },
+        { RtlHook::kAddMemopAddress, 4 },
+        { RtlHook::kAddStoreData, 4 },
+        { RtlHook::kPerformLoad, 3 },
+        { RtlHook::kCommitMemop, 2 },
+        { RtlHook::kCompleteStore, 1 },
         { RtlHook::kUpdateCacheLineState, 0 },
         { RtlHook::kUpdateCacheLineData, 0 },
         { RtlHook::kFlushRob, 0 },
