@@ -47,3 +47,10 @@ endforeach()
 # cannot pass until the trace is re-recorded. Keep it as an expected
 # failure so a (surprising) pass is noticed.
 set_tests_properties(trace_towers PROPERTIES WILL_FAIL TRUE)
+
+# rsort.txt was recorded by a hook that stopped reporting a store's
+# completion once its ROB slot was reused by a younger instruction (the
+# recorder keyed stores by ROB id). The bridge used to paper over that by
+# completing such stores when the slot was reused; it now tracks committed
+# stores by STQ entry, so this trace cannot pass until it is re-recorded.
+set_tests_properties(trace_rsort PROPERTIES WILL_FAIL TRUE)

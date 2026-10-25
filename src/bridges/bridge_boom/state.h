@@ -170,6 +170,16 @@ namespace m3
 
         // Map rob_id to MemopInfo.
         std::unordered_map<uint32_t, std::unordered_map<uint32_t, MemopInfo>> in_core_memops;
+
+        // Committed stores waiting in the STQ, per hart keyed by STQ entry.
+        // The ROB slot of a committed store is free and can be reused by a
+        // younger instruction before the store leaves the STQ, so from
+        // commit on a store is identified by its STQ entry instead.
+        std::unordered_map<uint32_t, std::unordered_map<uint32_t, MemopInfo>> committed_stores;
+
+        // Per hart: rob_id of the last store committed from it -> STQ entry,
+        // for completion events that carry no STQ entry (older traces).
+        std::unordered_map<uint32_t, std::unordered_map<uint32_t, uint32_t>> committed_rob_to_stq;
     };
 }
 

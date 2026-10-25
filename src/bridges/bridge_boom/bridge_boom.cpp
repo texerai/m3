@@ -164,16 +164,8 @@ namespace m3
                 std::cout << "ALERT: Previous entry did not complete." << std::endl;
             }
 
-            // The ROB entry is being reused, so its previous occupant has
-            // left the ROB. A committed store whose completion was never
-            // reported would otherwise stay in the model forever and keep
-            // forwarding stale data to younger loads.
-            if (memop_info.committed && memop_info.memop_type == MemopType::kStore && !memop_info.store_succeeded)
-            {
-                std::cout << "Warning: store (m3 iid " << memop_info.m3id << ") committed on hart " << data.hart_id
-                          << " rob " << data.rob_id << " never reported completion; completing it now." << std::endl;
-                MoveStoreBeyondCore(data.hart_id, memop_info, data.timestamp, state);
-            }
+            // Committed stores have already been moved to committed_stores
+            // (keyed by STQ entry), so reusing their ROB slot is fine here.
 
             // Drop the previous information.
             memop_info.Invalidate();
@@ -215,20 +207,39 @@ namespace m3
 
         static bool CompleteStore(const RtlHookData& data, State& state)
         {
-            // Get the entry.
-            MemopInfo& completing_memop = state.in_core_memops[data.hart_id][data.rob_id];
-            if (completing_memop.memop_type != MemopType::kStore || !completing_memop.committed)
+            // Committed stores are keyed by STQ entry (memop_id). Events
+            // recorded without it (older traces) fall back to the rob -> STQ
+            // alias of the most recently committed store with that rob id.
+            // Entries stay around after completion because the RTL keeps the
+            // succeeded bit up for a while, so a still-pending match wins.
+            auto& stores = state.committed_stores[data.hart_id];
+            MemopInfo* pending = nullptr;
+            bool seen_done = false;
+            auto consider = [&](std::unordered_map<uint32_t, MemopInfo>::iterator it)
             {
-                std::cout << "Error: CompleteStore for hart " << data.hart_id << " rob " << data.rob_id
-                          << " does not match a committed store (bridge lost track of it)." << std::endl;
-                return false;
-            }
-            if (completing_memop.store_succeeded)
+                if (it == stores.end() || it->second.rob_id != data.rob_id) return;
+                if (it->second.store_succeeded) seen_done = true;
+                else if (pending == nullptr) pending = &it->second;
+            };
+            consider(stores.find(data.memop_id));
+            auto& aliases = state.committed_rob_to_stq[data.hart_id];
+            auto alias = aliases.find(data.rob_id);
+            if (alias != aliases.end()) consider(stores.find(alias->second));
+
+            if (pending == nullptr)
             {
-                return true;  // the succeeded bit stays up for a few cycles
+                if (seen_done)
+                {
+                    return true;  // the succeeded bit stays up for a few cycles
+                }
+                // Not an RTL property: the bridge simply has nothing to
+                // complete (e.g. a fence occupying an STQ entry).
+                std::cout << "Warning: CompleteStore for hart " << data.hart_id << " rob " << data.rob_id
+                          << " stq " << data.memop_id << " does not match a committed store." << std::endl;
+                return true;
             }
 
-            MoveStoreBeyondCore(data.hart_id, completing_memop, data.timestamp, state);
+            MoveStoreBeyondCore(data.hart_id, *pending, data.timestamp, state);
             return true;
         }
 
@@ -283,6 +294,18 @@ namespace m3
                 m3cores[data.hart_id].st_locally_perform(m3id);
                 m3cores[data.hart_id].st_globally_perform(m3id);
             }
+            // A committed store leaves the ROB but stays in the STQ until
+            // the cache takes it; its ROB slot may be reused meanwhile, so
+            // track it by STQ entry from now on.
+            else if (memop_info.memop_type == MemopType::kStore)
+            {
+                if (memop_info.is_address_valid)
+                {
+                    state.committed_stores[data.hart_id][memop_info.stq_id] = memop_info;
+                    state.committed_rob_to_stq[data.hart_id][data.rob_id] = memop_info.stq_id;
+                }
+                in_core_memops[data.hart_id].erase(data.rob_id);
+            }
 
             return !should_abort;
         }
@@ -314,6 +337,7 @@ namespace m3
 
             memop_info.size = byte_size;
             memop_info.address = data.address;
+            memop_info.stq_id = data.memop_id;
             memop_info.is_address_valid = true;
             memop_info.is_device = IsDeviceAddress(data.address);
             if (memop_info.is_device)
@@ -357,8 +381,16 @@ namespace m3
         {
             M3Cores& m3cores = state.m3cores;
 
-            // Get the M3 entry based on ROB ID.
-            MemopInfo& memop_info = state.in_core_memops[data.hart_id][data.rob_id];
+            // Get the M3 entry based on ROB ID. The RTL keeps reporting the
+            // data while the store sits in the STQ, also after it committed
+            // and left the ROB; by then it is tracked by STQ entry instead.
+            auto& per_hart = state.in_core_memops[data.hart_id];
+            auto it = per_hart.find(data.rob_id);
+            if (it == per_hart.end())
+            {
+                return true;
+            }
+            MemopInfo& memop_info = it->second;
             m3::Inst_id m3id = m3::Inst_id(memop_info.m3id);
 
             // Skip if already set.
