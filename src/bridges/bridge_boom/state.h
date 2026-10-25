@@ -164,8 +164,8 @@ namespace m3
         // Track caching activities.
         Cache cache;
 
-        // Per hart: cache line tag -> committed stores (oldest first)
-        // waiting for the cache to report the line written.
+        // Per hart: cache line address (address >> 6) -> committed stores
+        // (oldest first) waiting for the cache to report the line written.
         std::unordered_map<uint32_t, std::unordered_map<uint64_t, std::vector<MemopInfo>>> beyond_core_stores;
 
         // Map rob_id to MemopInfo.

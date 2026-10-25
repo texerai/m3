@@ -126,16 +126,18 @@ namespace m3
                 return;
             }
 
-            uint64_t cache_line_tag = completing_memop.address >> 12;
-            state.beyond_core_stores[hart_id][cache_line_tag].push_back(completing_memop);
+            // Keyed by the full line address (tag and set), not just the
+            // tag: lines of the same page are owned independently.
+            uint64_t cache_line = completing_memop.address >> 6;
+            state.beyond_core_stores[hart_id][cache_line].push_back(completing_memop);
         }
 
-        // The cache line with this tag is now owned by the hart: the stores
+        // The cache line (address >> 6) is now owned by the hart: the stores
         // waiting on it are visible to everybody.
-        static void GloballyPerformPendingStores(uint32_t hart_id, uint64_t cache_line_tag, State& state)
+        static void GloballyPerformPendingStores(uint32_t hart_id, uint64_t cache_line, State& state)
         {
             auto& per_hart = state.beyond_core_stores[hart_id];
-            auto it = per_hart.find(cache_line_tag);
+            auto it = per_hart.find(cache_line);
             if (it == per_hart.end())
             {
                 //assert(false);
@@ -547,7 +549,7 @@ namespace m3
             const auto& cache_line = state.cache.banks[data.way_id][cache_line_id];
             if (cache_line.coh_state == kBoomMesiStateValue)
             {
-                GloballyPerformPendingStores(data.hart_id, cache_line.tag, state);
+                GloballyPerformPendingStores(data.hart_id, (cache_line.tag << 6) | cache_line_id, state);
             }
 
             return true;
@@ -563,7 +565,7 @@ namespace m3
             // coherence mechanisms?
             if (data.coherence_state == kBoomMesiStateValue)
             {
-                GloballyPerformPendingStores(data.hart_id, data.tag, state);
+                GloballyPerformPendingStores(data.hart_id, (data.tag << 6) | data.cache_line_id, state);
             }
 
             return true;
