@@ -50,6 +50,10 @@ namespace m3
     // Global state.
     static State state;
 
+    // M3_BRIDGE_DEBUG=1 narrates the store lifecycle.
+    static const bool kBridgeDebug = std::getenv("M3_BRIDGE_DEBUG") != nullptr;
+    static uint64_t debug_now = 0;  // timestamp of the event being served
+
     // Define bridge functions under this namespace.
     namespace commands
     {
@@ -148,6 +152,12 @@ namespace m3
             for (const MemopInfo& pending : it->second)
             {
                 assert(pending.m3id > 0);
+                if (kBridgeDebug)
+                {
+                    std::cout << "bridge: hart " << hart_id << " globally performs store iid " << pending.m3id
+                              << " addr 0x" << std::hex << pending.address << std::dec << " data " << pending.store_data
+                              << " (completed at " << pending.completed_time << ") at " << debug_now << std::endl;
+                }
                 state.m3cores[hart_id].st_globally_perform(Inst_id(pending.m3id));
             }
             per_hart.erase(it);
@@ -241,6 +251,12 @@ namespace m3
                 return true;
             }
 
+            if (kBridgeDebug)
+            {
+                std::cout << "bridge: hart " << data.hart_id << " store iid " << pending->m3id << " addr 0x" << std::hex
+                          << pending->address << std::dec << " data " << pending->store_data << " completed at "
+                          << data.timestamp << std::endl;
+            }
             MoveStoreBeyondCore(data.hart_id, *pending, data.timestamp, state);
             return true;
         }
@@ -664,6 +680,7 @@ namespace m3
                 int32_t priority = kRtlHookPriority[data.event];
                 if (priority == execution_priority)
                 {
+                    debug_now = data.timestamp;
                     // Keep serving the remaining events of this cycle so the
                     // state stays consistent, but report the failure.
                     all_succeeded &= commands::kRtlHookCommands[data.event](data, state);
