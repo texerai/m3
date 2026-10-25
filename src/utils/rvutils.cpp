@@ -85,6 +85,7 @@ bool RVUtils::is_amo(uint32_t insn)
     switch (insn >> 27) {
         case 1:    /* amiswap.w */
         case 2:    /* lr.w */
+        case 3:    /* sc.w: a store that may not happen */
         case 0:    /* amoadd.w */
         case 4:    /* amoxor.w */
         case 0xc:  /* amoand.w */

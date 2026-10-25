@@ -304,13 +304,19 @@ namespace m3
                 }
             }
             // AMOs should get visible at commit. Commit of AMO
-            // guarantees that the data in the cache.
+            // guarantees that the data in the cache. A store-conditional
+            // is an AMO whose store only happens when it succeeded; the
+            // RTL's SC result (0 = success) rides in load_rtl_data.
             else if (memop_info.memop_type == MemopType::kAmo)
             {
-                auto &d_store = m3cores[data.hart_id].st_data_ref(m3id);
-                d_store.set_data(memop_info.address, memop_info.size, memop_info.store_data);
-                m3cores[data.hart_id].st_locally_perform(m3id);
-                m3cores[data.hart_id].st_globally_perform(m3id);
+                bool is_sc = (memop_info.instruction & 0x7f) == 0x2f && (memop_info.instruction >> 27) == 3;
+                if (!(is_sc && data.load_rtl_data != 0))
+                {
+                    auto &d_store = m3cores[data.hart_id].st_data_ref(m3id);
+                    d_store.set_data(memop_info.address, memop_info.size, memop_info.store_data);
+                    m3cores[data.hart_id].st_locally_perform(m3id);
+                    m3cores[data.hart_id].st_globally_perform(m3id);
+                }
             }
             // A committed store leaves the ROB but stays in the STQ until
             // the cache takes it; its ROB slot may be reused meanwhile, so
@@ -458,7 +464,8 @@ namespace m3
             {
                 memop_info.check_failed = true;
                 std::cout << "Error: Load Perform Failed (iid: ";
-                std::cout << static_cast<uint32_t>(memop_info.m3id) << ")" << std::endl;
+                std::cout << static_cast<uint32_t>(memop_info.m3id) << ", hart " << data.hart_id << ", rob " << data.rob_id
+                          << ", timestamp " << data.timestamp << ")" << std::endl;
                 std::cout << "  DUT: " << std::hex << rtl_data << ", Model: " << model_data;
                 std::cout << ", Address: " << memop_info.address << std::dec << std::endl;
             }
