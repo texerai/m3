@@ -17,11 +17,10 @@ include_directories(
 add_executable(core_test core_test.cpp)
 add_executable(data_test data_test.cpp)
 
-# Trace replay test for the BOOM bridge.
+# Trace replay test for the BOOM bridge (the bridge itself is part of libm3).
 add_executable(bridge_boom_test
     bridge_boom_test.cpp
     test_trace_reader/test_trace_reader.cpp
-    ${CMAKE_SOURCE_DIR}/src/bridges/bridge_boom/bridge_boom.cpp
 )
 
 # Link with the main library

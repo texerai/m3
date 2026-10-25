@@ -614,6 +614,11 @@ namespace m3
         pimpl_->rtl_hook_data.push_back(data);
     }
 
+    void BridgeBoom::AddDeviceRegion(uint64_t begin, uint64_t end)
+    {
+        g_extra_device_regions.push_back({begin, end});
+    }
+
     bool BridgeBoom::ServeRegisteredEvents()
     {
         bool all_succeeded = true;

@@ -10,6 +10,7 @@
 #include "test_trace_reader/test_trace_reader.h"
 
 // C++ libraries.
+#include <algorithm>
 #include <iostream>
 #include <unordered_map>
 
@@ -124,11 +125,6 @@ int main(int argc, char* argv[])
 
     std::cout << "Trace file path: " << arg << "\n";
 
-    m3::BridgeBoom bridge_boom;
-    bridge_boom.Init(2);
-    bridge_boom.SetCallbackGetByte(GetByte);
-    bridge_boom.SetCallbackUpdateReg(UpdateReg);
-
     std::vector<m3::RtlHookData> rtl_hook_data;
     std::string errorMessage;
     if (!m3::TestTraceReader::ParseFile(arg, rtl_hook_data, errorMessage))
@@ -136,6 +132,18 @@ int main(int argc, char* argv[])
         std::cerr << "Error: " << errorMessage << "\n";
         return 1;
     }
+
+    // The trace itself says how many cores were simulated.
+    uint32_t ncores = 1;
+    for (const auto& hook : rtl_hook_data)
+    {
+        ncores = std::max(ncores, hook.hart_id + 1);
+    }
+
+    m3::BridgeBoom bridge_boom;
+    bridge_boom.Init(ncores);
+    bridge_boom.SetCallbackGetByte(GetByte);
+    bridge_boom.SetCallbackUpdateReg(UpdateReg);
 
     // Talk to the m3.
     uint64_t failed_cycles = 0;

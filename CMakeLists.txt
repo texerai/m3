@@ -26,6 +26,7 @@ set(M3_SOURCES
     src/third_party/lrand.cpp
     src/utils/rvutils.cpp
     src/utils/tracer.cpp
+    src/bridges/bridge_boom/bridge_boom.cpp
 )
 
 # Define the static library
@@ -33,6 +34,8 @@ add_library(m3 STATIC ${M3_SOURCES})
 
 target_include_directories(m3 PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/bridges/bridge_boom
 )
 
 # Add tests or other subdirectories

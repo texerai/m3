@@ -34,9 +34,21 @@ namespace m3
         { 0x0c000000, 0x10000000 },  // PLIC
         { 0x54000000, 0x54001000 },  // UART
     };
+    // Regions registered at run time by the simulation harness, e.g. the
+    // HTIF tohost/fromhost words that the host writes behind the cores'
+    // backs (see BridgeBoom::AddDeviceRegion).
+    inline std::vector<AddressRange> g_extra_device_regions;
+
     inline bool IsDeviceAddress(uint64_t address)
     {
         for (const auto& range : kBoomDeviceRegions)
+        {
+            if (address >= range.begin && address < range.end)
+            {
+                return true;
+            }
+        }
+        for (const auto& range : g_extra_device_regions)
         {
             if (address >= range.begin && address < range.end)
             {

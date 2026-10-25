@@ -26,6 +26,12 @@ namespace m3
         void Init(uint32_t ncores);
         void RegisterEvent(const RtlHookData& data);
 
+        // Declares [begin, end) as an uncached device region in addition to
+        // the SoC's fixed ones: loads from it are not checked and stores to
+        // it perform as soon as they complete. The harness uses it for the
+        // HTIF tohost/fromhost words, which the host writes directly.
+        void AddDeviceRegion(uint64_t begin, uint64_t end);
+
         // Serves every registered event. Returns false if any of them
         // detected a verification failure (e.g. a load committing with
         // data that does not match the model).
