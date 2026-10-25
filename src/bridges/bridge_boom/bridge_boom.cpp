@@ -546,7 +546,7 @@ namespace m3
             // The data write carries the byte address within the way:
             // (index << 6) | offset for BOOM's 64-byte lines.
             uint32_t cache_line_id = data.address >> 6;
-            const auto& cache_line = state.cache.banks[data.way_id][cache_line_id];
+            const auto& cache_line = state.caches[data.hart_id].banks[data.way_id][cache_line_id];
             if (cache_line.coh_state == kBoomMesiStateValue)
             {
                 GloballyPerformPendingStores(data.hart_id, (cache_line.tag << 6) | cache_line_id, state);
@@ -557,7 +557,7 @@ namespace m3
 
         bool UpdateCachelineState(const RtlHookData& data, State& state)
         {
-            state.cache.UpdateMetaData(data.way_id, data.cache_line_id, data.coherence_state, data.tag);
+            state.caches[data.hart_id].UpdateMetaData(data.way_id, data.cache_line_id, data.coherence_state, data.tag);
 
             // What if gets invalidated?
             // What if it was a store miss and the data never got

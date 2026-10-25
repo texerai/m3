@@ -161,8 +161,8 @@ namespace m3
         // Track memory operation activities of each core.
         M3Cores m3cores;
 
-        // Track caching activities.
-        Cache cache;
+        // Track caching activities, per hart: every core has its own L1D.
+        std::unordered_map<uint32_t, Cache> caches;
 
         // Per hart: cache line address (address >> 6) -> committed stores
         // (oldest first) waiting for the cache to report the line written.
