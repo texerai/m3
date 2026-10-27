@@ -290,6 +290,17 @@ namespace m3
             // Load data check.
             if (memop_info.memop_type == MemopType::kLoad)
             {
+                // The data may have matched when the load performed and still
+                // be wrong now: an older store that received its address
+                // afterwards re-performs the load in the model and flags it
+                // (st_locally_perform). A correct core squashes such a load;
+                // committing it is a forwarding bug.
+                if (m3cores[data.hart_id].is_tracked(m3id) && m3cores[data.hart_id].has_error(m3id))
+                {
+                    memop_info.check_failed = true;
+                    memop_info.load_model_data =
+                        m3cores[data.hart_id].ld_data_ref(m3id).get_data(memop_info.address, memop_info.size);
+                }
                 if (!memop_info.check_failed)
                 {
                     bool is_fp = memop_info.load_dest_reg > 31;

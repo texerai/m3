@@ -299,6 +299,10 @@ namespace m3
         return !it->error.empty();
     }
 
+    bool MemoryMarionette::is_tracked(Inst_id iid) const {
+        return std::find_if(rob.begin(), rob.end(), [&iid](const Rob_entry &x) { return x.rid == iid; }) != rob.end();
+    }
+
     void MemoryMarionette::dump_oldest(size_t n) const {
         std::cout << "core cid:" << cid << " pnr:" << pnr << " oldest of " << rob.size() << ":\n";
         for (auto it = rob.rbegin(); it != rob.rend() && n > 0; ++it, --n) {

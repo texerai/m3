@@ -102,6 +102,11 @@ namespace m3
 
         bool has_error(Inst_id iid) const;
 
+        /** is_tracked
+        * True while the operation is still in the reorder buffer.
+        */
+        bool is_tracked(Inst_id iid) const;
+
         /** size
         * Number of memory operations currently tracked (not yet retired)
         */

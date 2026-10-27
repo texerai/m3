@@ -34,6 +34,9 @@ struct MemopAddress
 };
 // (hart_id, rob_id) -> address of the memop, from the kAddMemopAddress event.
 static std::unordered_map<uint32_t, std::unordered_map<uint32_t, MemopAddress>> memop_addresses;
+// (hart_id, rob_id) -> true for an AMO (not SC): its read half is reported by
+// the RTL only at commit, as load_rtl_data of the kCommitMemop event.
+static std::unordered_map<uint32_t, std::unordered_map<uint32_t, bool>> memop_is_amo;
 
 struct Core
 {
@@ -74,11 +77,18 @@ static void UpdateReg(uint32_t hart_id, uint32_t dest_reg, uint64_t write_data, 
 // bridge serves the events of this cycle.
 static void PrepareSeeding(const m3::RtlHookData& data)
 {
-    if (data.event == m3::RtlHook::kAddMemopAddress)
+    if (data.event == m3::RtlHook::kCreateMemop)
+    {
+        const uint32_t insn = data.rv_instruction;
+        bool is_sc = (insn & 0x7f) == 0x2f && (insn >> 27) == 3;
+        memop_is_amo[data.hart_id][data.rob_id] = data.is_amo && !is_sc;
+    }
+    else if (data.event == m3::RtlHook::kAddMemopAddress)
     {
         memop_addresses[data.hart_id][data.rob_id] = {data.address, MemopSizeToBytes(data.memop_size)};
     }
-    else if (data.event == m3::RtlHook::kPerformLoad)
+    else if (data.event == m3::RtlHook::kPerformLoad ||
+             (data.event == m3::RtlHook::kCommitMemop && memop_is_amo[data.hart_id][data.rob_id]))
     {
         auto& per_hart = memop_addresses[data.hart_id];
         auto it = per_hart.find(data.rob_id);
