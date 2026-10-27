@@ -131,6 +131,12 @@ namespace m3
     }
 
     void MemoryMarionette::st_locally_perform(Inst_id iid) {
+        // The store may already have been nuked (squashed by the RTL) when a
+        // late address event for it arrives: nothing to perform then.
+        if (std::find_if(rob.begin(), rob.end(), [&iid](const Rob_entry &x) { return x.rid == iid; }) == rob.end()) {
+            std::cout << "WARNING: st iid:" << iid << " not in ROB (already nuked?), perform ignored\n";
+            return;
+        }
         auto &ent = find_entry(iid);
 
         if (!ent.st_data.has_data()) {

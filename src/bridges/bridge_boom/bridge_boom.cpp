@@ -299,12 +299,11 @@ namespace m3
                 else
                 {
                     should_abort = true;
-                    if constexpr (kIsDebugOn)
-                    {
-                        std::cout << "Error: Load commiting with a mismatched performed data.\n";
-                        std::cout << " - Model data: " << memop_info.load_model_data << "\n";
-                        std::cout << " - RTL data: " << memop_info.load_rtl_data << "\n";
-                    }
+                    std::cout << "Error: Load committing with mismatched performed data (iid: "
+                              << static_cast<uint32_t>(memop_info.m3id) << ", hart " << data.hart_id << ", rob "
+                              << data.rob_id << ", timestamp " << data.timestamp << ")\n";
+                    std::cout << "  DUT: " << std::hex << memop_info.load_rtl_data << ", Model: " << memop_info.load_model_data
+                              << ", Address: " << memop_info.address << std::dec << "\n";
                 }
             }
             // AMOs should get visible at commit. Commit of AMO
@@ -462,19 +461,23 @@ namespace m3
             int64_t model_data_signed = RVUtils::sign_extend(model_data, memop_info.size);
             int64_t loaded_data_signed = RVUtils::sign_extend(rtl_data, memop_info.size);
 
-            // Check the load data. Device reads cannot be predicted.
+            // Check the load data. Device reads cannot be predicted. A
+            // mismatch here is not a failure yet: an out-of-order core may
+            // perform a load speculatively (e.g. before an older store to the
+            // same address has its address) and squash it later. The run only
+            // fails if such a load commits (see CommitMemop).
             bool is_success = memop_info.is_device || model_data_signed == loaded_data_signed;
             if (!is_success)
             {
                 memop_info.check_failed = true;
-                std::cout << "Error: Load Perform Failed (iid: ";
+                std::cout << "Note: Load Perform mismatch (iid: ";
                 std::cout << static_cast<uint32_t>(memop_info.m3id) << ", hart " << data.hart_id << ", rob " << data.rob_id
                           << ", timestamp " << data.timestamp << ")" << std::endl;
                 std::cout << "  DUT: " << std::hex << rtl_data << ", Model: " << model_data;
                 std::cout << ", Address: " << memop_info.address << std::dec << std::endl;
             }
 
-            return is_success;
+            return true;
         }
 
         static bool FlushRob(const RtlHookData& data, State& state)
