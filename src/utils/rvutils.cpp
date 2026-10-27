@@ -94,6 +94,29 @@ bool RVUtils::is_amo(uint32_t insn)
     }
 }
 
+uint64_t RVUtils::amo_result(uint32_t insn, uint64_t old, uint64_t operand, uint32_t size)
+{
+    uint64_t mask = get_sized_mask(size);
+    int64_t old_s = sign_extend(old, size);
+    int64_t op_s = sign_extend(operand, size);
+    uint64_t old_u = old & mask;
+    uint64_t op_u = operand & mask;
+    uint64_t res;
+    switch (insn >> 27) {
+        case 0x00: res = old_u + op_u; break;                  /* amoadd */
+        case 0x01: res = op_u; break;                          /* amoswap */
+        case 0x04: res = old_u ^ op_u; break;                  /* amoxor */
+        case 0x08: res = old_u | op_u; break;                  /* amoor */
+        case 0x0c: res = old_u & op_u; break;                  /* amoand */
+        case 0x10: res = old_s < op_s ? old_u : op_u; break;   /* amomin */
+        case 0x14: res = old_s > op_s ? old_u : op_u; break;   /* amomax */
+        case 0x18: res = old_u < op_u ? old_u : op_u; break;   /* amominu */
+        case 0x1c: res = old_u > op_u ? old_u : op_u; break;   /* amomaxu */
+        default:   res = op_u; break;                          /* sc and unknown: store operand */
+    }
+    return res & mask;
+}
+
 int32_t RVUtils::get_source_from_store(uint32_t insn)
 {
     int32_t source = -1;

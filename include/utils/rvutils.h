@@ -25,6 +25,9 @@ public:
     static uint64_t simple_hash(uint64_t hartid, uint64_t rob_id);
     static uint64_t get_sized_mask(uint32_t size_in_bytes);
     static int64_t sign_extend(uint64_t data, uint32_t size);
+    // Value an AMO instruction writes back to memory: f(old, operand),
+    // truncated to the access size (bytes).
+    static uint64_t amo_result(uint32_t insn, uint64_t old, uint64_t operand, uint32_t size);
     static uint32_t inst_size_to_byte_size(uint32_t inst_size);
 
     RVUtils() = delete;

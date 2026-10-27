@@ -315,8 +315,30 @@ namespace m3
                 bool is_sc = (memop_info.instruction & 0x7f) == 0x2f && (memop_info.instruction >> 27) == 3;
                 if (!(is_sc && data.load_rtl_data != 0))
                 {
+                    uint64_t new_data = memop_info.store_data;
+                    if (!is_sc && !memop_info.is_device)
+                    {
+                        // A real AMO writes f(old, operand): read the old
+                        // value from the model, check it against what the
+                        // RTL returned (load_rtl_data = the AMO's rd), and
+                        // compute the new value.
+                        auto &d_load = m3cores[data.hart_id].ld_data_ref(m3id);
+                        m3cores[data.hart_id].ld_perform(m3id);
+                        uint64_t old = d_load.get_data(memop_info.address, memop_info.size);
+                        int64_t old_s = RVUtils::sign_extend(old, memop_info.size);
+                        int64_t rtl_s = RVUtils::sign_extend(data.load_rtl_data, memop_info.size);
+                        if (old_s != rtl_s)
+                        {
+                            should_abort = true;
+                            std::cout << "Error: AMO read value mismatch (iid: " << static_cast<uint32_t>(memop_info.m3id)
+                                      << ", hart " << data.hart_id << ", rob " << data.rob_id << ", timestamp "
+                                      << data.timestamp << ")\n  DUT: " << std::hex << data.load_rtl_data
+                                      << ", Model: " << old << ", Address: " << memop_info.address << std::dec << "\n";
+                        }
+                        new_data = RVUtils::amo_result(memop_info.instruction, old, memop_info.store_data, memop_info.size);
+                    }
                     auto &d_store = m3cores[data.hart_id].st_data_ref(m3id);
-                    d_store.set_data(memop_info.address, memop_info.size, memop_info.store_data);
+                    d_store.set_data(memop_info.address, memop_info.size, new_data);
                     m3cores[data.hart_id].st_locally_perform(m3id);
                     m3cores[data.hart_id].st_globally_perform(m3id);
                 }
