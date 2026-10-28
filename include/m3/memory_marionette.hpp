@@ -107,6 +107,11 @@ namespace m3
         */
         bool is_tracked(Inst_id iid) const;
 
+        /** error_text
+        * The error recorded for the operation (empty if none or retired).
+        */
+        std::string error_text(Inst_id iid) const;
+
         /** size
         * Number of memory operations currently tracked (not yet retired)
         */

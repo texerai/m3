@@ -295,11 +295,11 @@ namespace m3
                 // afterwards re-performs the load in the model and flags it
                 // (st_locally_perform). A correct core squashes such a load;
                 // committing it is a forwarding bug.
+                std::string m3_error;
                 if (m3cores[data.hart_id].is_tracked(m3id) && m3cores[data.hart_id].has_error(m3id))
                 {
                     memop_info.check_failed = true;
-                    memop_info.load_model_data =
-                        m3cores[data.hart_id].ld_data_ref(m3id).get_data(memop_info.address, memop_info.size);
+                    m3_error = m3cores[data.hart_id].error_text(m3id);
                 }
                 if (!memop_info.check_failed)
                 {
@@ -315,6 +315,8 @@ namespace m3
                               << data.rob_id << ", timestamp " << data.timestamp << ")\n";
                     std::cout << "  DUT: " << std::hex << memop_info.load_rtl_data << ", Model: " << memop_info.load_model_data
                               << ", Address: " << memop_info.address << std::dec << "\n";
+                    if (!m3_error.empty())
+                        std::cout << "  m3: " << m3_error << "\n";
                 }
             }
             // AMOs should get visible at commit. Commit of AMO
