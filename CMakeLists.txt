@@ -38,6 +38,21 @@ target_include_directories(m3 PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/bridges/bridge_boom
 )
 
+# XiangShan bridge: the m3 core plus bridge_xiangshan, linked into the XiangShan emu.
+add_library(m3_xiangshan STATIC
+    src/m3/data.cpp
+    src/m3/memory_marionette.cpp
+    src/third_party/lrand.cpp
+    src/utils/rvutils.cpp
+    src/bridges/bridge_xiangshan/bridge_xiangshan.cpp
+)
+target_include_directories(m3_xiangshan PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/bridges/bridge_xiangshan
+)
+set_target_properties(m3_xiangshan PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 # Add tests or other subdirectories
 if(M3_BUILD_TESTS)
     enable_testing()
