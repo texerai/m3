@@ -12,12 +12,51 @@
 // C++ libraries.
 #include <stdint.h>
 #include <unordered_map>
+#include <vector>
 
 namespace m3
 {
     using M3Cores = std::vector<MemoryMarionette>;
 
     const uint32_t kBoomMesiStateValue = 0x3;
+
+    // Uncached device regions of the BOOM SoC (CLINT, PLIC, UART...).
+    // Accesses there bypass the data cache: stores are globally performed
+    // as soon as they complete, and load values are not checked because
+    // the model has no knowledge of the device state.
+    struct AddressRange
+    {
+        uint64_t begin;
+        uint64_t end;  // exclusive
+    };
+    static const AddressRange kBoomDeviceRegions[] = {
+        { 0x02000000, 0x02010000 },  // CLINT
+        { 0x0c000000, 0x10000000 },  // PLIC
+        { 0x54000000, 0x54001000 },  // UART
+    };
+    // Regions registered at run time by the simulation harness, e.g. the
+    // HTIF tohost/fromhost words that the host writes behind the cores'
+    // backs (see BridgeBoom::AddDeviceRegion).
+    inline std::vector<AddressRange> g_extra_device_regions;
+
+    inline bool IsDeviceAddress(uint64_t address)
+    {
+        for (const auto& range : kBoomDeviceRegions)
+        {
+            if (address >= range.begin && address < range.end)
+            {
+                return true;
+            }
+        }
+        for (const auto& range : g_extra_device_regions)
+        {
+            if (address >= range.begin && address < range.end)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // Structures to keep track of memory operation.
     enum class MemopFormat
@@ -57,6 +96,7 @@ namespace m3
         bool is_address_valid = false;
         bool is_data_valid = false;
         bool is_just_created = true;
+        bool is_device = false;
 
         bool CanBePerformed() const
         {
@@ -76,6 +116,7 @@ namespace m3
             committed = false;
             address = 0;
             is_just_created = true;
+            is_device = false;
         }
     };
 
@@ -101,21 +142,44 @@ namespace m3
         }
     };
 
+    // Per hart: for each branch-mask bit, the oldest tracked memop
+    // speculated under that branch. "resolved" keeps the record of a
+    // branch that has resolved until its bit is reused.
+    struct BranchTracker
+    {
+        std::unordered_map<uint32_t, uint64_t> live_oldest;
+        std::unordered_map<uint32_t, uint64_t> resolved_oldest;
+    };
+
     // The structure keeps track of relevant information
     // required for verification of the memory model.
     struct State
     {
+        // Branch speculation tracking per hart.
+        std::unordered_map<uint32_t, BranchTracker> branch_trackers;
+
         // Track memory operation activities of each core.
         M3Cores m3cores;
 
-        // Track caching activities.
-        Cache cache;
+        // Track caching activities, per hart: every core has its own L1D.
+        std::unordered_map<uint32_t, Cache> caches;
 
-        // Map STQ to MemopInfo. STQ IDs are stored beyond commit.
-        std::unordered_map<uint32_t, std::unordered_map<uint32_t, MemopInfo>> beyond_core_stores;
+        // Per hart: cache line address (address >> 6) -> committed stores
+        // (oldest first) waiting for the cache to report the line written.
+        std::unordered_map<uint32_t, std::unordered_map<uint64_t, std::vector<MemopInfo>>> beyond_core_stores;
 
         // Map rob_id to MemopInfo.
         std::unordered_map<uint32_t, std::unordered_map<uint32_t, MemopInfo>> in_core_memops;
+
+        // Committed stores waiting in the STQ, per hart keyed by STQ entry.
+        // The ROB slot of a committed store is free and can be reused by a
+        // younger instruction before the store leaves the STQ, so from
+        // commit on a store is identified by its STQ entry instead.
+        std::unordered_map<uint32_t, std::unordered_map<uint32_t, MemopInfo>> committed_stores;
+
+        // Per hart: rob_id of the last store committed from it -> STQ entry,
+        // for completion events that carry no STQ entry (older traces).
+        std::unordered_map<uint32_t, std::unordered_map<uint32_t, uint32_t>> committed_rob_to_stq;
     };
 }
 

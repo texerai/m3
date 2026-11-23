@@ -43,27 +43,23 @@ bool RVUtils::is_fp_load(uint32_t insn)
     return is_f_load;
 }
 
+// RV64 encodings: C.FLW/C.FSW of RV32 are C.LD/C.SD here.
 bool RVUtils::is_compressed_load(uint32_t insn)
 {
     bool is_c_fld = (insn & 0x3) == 0 && (insn & 0xe000) == 0x2000;
     bool is_c_lw = (insn & 0x3) == 0 && (insn & 0xe000) == 0x4000;
-    bool is_c_flw = (insn & 0x3) == 0 && (insn & 0xe000) == 0x6000;
     bool is_c_ld = (insn & 0x3) == 0 && (insn & 0xe000) == 0x6000;
     bool is_c_fld_sp = (insn & 0x3) == 2 && (insn & 0xe000) == 0x2000;
     bool is_c_lw_sp = (insn & 0x3) == 2 && (insn & 0xe000) == 0x4000;
-    bool is_c_flw_sp = (insn & 0x3) == 2 && (insn & 0xe000) == 0x6000;
     bool is_c_ld_sp = (insn & 0x3) == 2 && (insn & 0xe000) == 0x6000;
-    return (is_c_fld || is_c_lw || is_c_flw || is_c_ld
-        || is_c_fld_sp || is_c_lw_sp || is_c_flw_sp || is_c_ld_sp);
+    return (is_c_fld || is_c_lw || is_c_ld || is_c_fld_sp || is_c_lw_sp || is_c_ld_sp);
 }
 
 bool RVUtils::is_compressed_fp_load(uint32_t insn)
 {
     bool is_c_fld = (insn & 0x3) == 0 && (insn & 0xe000) == 0x2000;
-    bool is_c_flw = (insn & 0x3) == 0 && (insn & 0xe000) == 0x6000;
     bool is_c_fld_sp = (insn & 0x3) == 2 && (insn & 0xe000) == 0x2000;
-    bool is_c_flw_sp = (insn & 0x3) == 2 && (insn & 0xe000) == 0x6000;
-    return (is_c_fld || is_c_flw || is_c_fld_sp || is_c_flw_sp);
+    return (is_c_fld || is_c_fld_sp);
 }
 
 bool RVUtils::is_compressed_memop(uint32_t insn)
@@ -85,6 +81,7 @@ bool RVUtils::is_amo(uint32_t insn)
     switch (insn >> 27) {
         case 1:    /* amiswap.w */
         case 2:    /* lr.w */
+        case 3:    /* sc.w: a store that may not happen */
         case 0:    /* amoadd.w */
         case 4:    /* amoxor.w */
         case 0xc:  /* amoand.w */
@@ -95,6 +92,29 @@ bool RVUtils::is_amo(uint32_t insn)
         case 0x1c: /* amomaxu.w */ return true;
         default: return false;
     }
+}
+
+uint64_t RVUtils::amo_result(uint32_t insn, uint64_t old, uint64_t operand, uint32_t size)
+{
+    uint64_t mask = get_sized_mask(size);
+    int64_t old_s = sign_extend(old, size);
+    int64_t op_s = sign_extend(operand, size);
+    uint64_t old_u = old & mask;
+    uint64_t op_u = operand & mask;
+    uint64_t res;
+    switch (insn >> 27) {
+        case 0x00: res = old_u + op_u; break;                  /* amoadd */
+        case 0x01: res = op_u; break;                          /* amoswap */
+        case 0x04: res = old_u ^ op_u; break;                  /* amoxor */
+        case 0x08: res = old_u | op_u; break;                  /* amoor */
+        case 0x0c: res = old_u & op_u; break;                  /* amoand */
+        case 0x10: res = old_s < op_s ? old_u : op_u; break;   /* amomin */
+        case 0x14: res = old_s > op_s ? old_u : op_u; break;   /* amomax */
+        case 0x18: res = old_u < op_u ? old_u : op_u; break;   /* amominu */
+        case 0x1c: res = old_u > op_u ? old_u : op_u; break;   /* amomaxu */
+        default:   res = op_u; break;                          /* sc and unknown: store operand */
+    }
+    return res & mask;
 }
 
 int32_t RVUtils::get_source_from_store(uint32_t insn)
@@ -118,7 +138,9 @@ int32_t RVUtils::get_destination_from_load(uint32_t insn)
 
     if (is_compressed_load(insn))
     {
-        destination = ((insn >> 2) & 0x7) + 8;
+        // Stack-pointer forms (quadrant 2) carry a full rd in [11:7];
+        // the others a 3-bit rd' in [4:2].
+        destination = (insn & 0x3) == 2 ? ((insn >> 7) & 0x1f) : ((insn >> 2) & 0x7) + 8;
     }
     else if (is_load(insn))
     {

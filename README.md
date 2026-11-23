@@ -42,10 +42,26 @@ The Memory Marionette Model (m3) is a powerful verification library designed to 
 
 3. Build the project:
    ```bash
-   mkdir build
-   cd build
-   cmake ..
-   make -j
+   cmake -S . -B build
+   cmake --build build -j
    ```
 
 The library will be built as `libm3.a` in the `build` directory. Headers will be in `include/`.
+
+The default build type is `Debug`, which keeps the library's internal asserts enabled. Add `-DM3_SANITIZE=ON` to build with AddressSanitizer and UndefinedBehaviorSanitizer.
+
+## Running the Tests
+
+```bash
+ctest --test-dir build --output-on-failure -j 4
+```
+
+The suite has three parts:
+
+- `core_test` and `data_test`: unit tests of the library semantics (forwarding, ordering checks, nuking, merging, byte-level data handling), written with [doctest](https://github.com/doctest/doctest).
+- `trace_<name>`: replays of event traces recorded from dual-core BOOM simulations (`tests/traces/`) through the BOOM bridge. A replay fails if the bridge reports any verification failure, e.g. a load committing with data that does not match the model.
+- `trace_towers` is registered as an expected failure: that recording captured virtual instead of physical addresses for some memops and cannot pass until it is re-recorded.
+
+The traces do not include the initial memory image of the simulation, so the replay seeds the golden memory lazily with the values the RTL observed on the first load of each byte. Every later load of those bytes, and all forwarding and ordering checks, are real checks.
+
+CI (`.github/workflows/ci.yml`) runs the suite in Debug with sanitizers and in Release, both with `-Werror`.

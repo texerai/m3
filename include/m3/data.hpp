@@ -38,8 +38,10 @@ namespace m3
                     return;  // done
 
                 if (c.addr - 1 == addr) {
+                    // Chunks are sorted and never adjacent, so the byte just
+                    // before this chunk cannot belong to the previous one.
+                    assert(i == 0 || !chunks[i - 1].is_hit(addr));
                     --c.addr;
-                    assert(i > 0 && !chunks[i - 1].is_hit(addr - 1));
                     c.data.insert(c.data.begin(), 1, rand_data.any());
                     return;
                 }
@@ -131,6 +133,21 @@ namespace m3
 
         bool has_byte(const uint64_t addr) const { return has_full_overlap(addr, 1); }
 
+        // True if this and d2 hold the same value for every byte that is
+        // present in both and lies inside one of range's chunks.
+        bool same_bytes_within(const Data &d2, const Data &range) const {
+            for (const auto &c : range.chunks) {
+                for (auto i = 0u; i < c.data.size(); ++i) {
+                    const auto a = c.addr + i;
+                    if (!has_byte(a) || !d2.has_byte(a))
+                        continue;
+                    if (get_byte(a) != d2.get_byte(a))
+                        return false;
+                }
+            }
+            return true;
+        }
+
         void set_byte(const uint64_t addr, const uint8_t b) {
             for (auto &c : chunks) {
                 if (!c.is_hit(addr))
@@ -160,7 +177,7 @@ namespace m3
         void dump() const { std::cout << str(); }
 
         void add_newer(const Data &d2) {
-            for (const auto c : d2.chunks) {
+            for (const auto &c : d2.chunks) {
                 add_addr(c.addr, c.data.size());
                 for (auto i = 0u; i < c.data.size(); ++i) {
                     set_byte(c.addr + i, c.data[i]);
@@ -173,7 +190,7 @@ namespace m3
         // Returns false if no chunk was updates.
         bool update_newer(const Data &d2) {
             bool is_updated = false;
-            for (const auto c : d2.chunks) {
+            for (const auto &c : d2.chunks) {
                 // Skip if the chunk has no overlaps.
                 if (!has_overlap(c.addr, c.data.size()))
                     continue;
@@ -192,13 +209,13 @@ namespace m3
         void set_device() { device = true; }
 
         void each_chunk(std::function<void(uint64_t, const std::vector<uint8_t> &)> fun) {
-            for (const auto c : chunks) {
+            for (const auto &c : chunks) {
                 fun(c.addr, c.data);
             }
         }
 
         void each_chunk(std::function<void(uint64_t, const std::vector<uint8_t> &)> fun) const {
-            for (const auto c : chunks) {
+            for (const auto &c : chunks) {
                 fun(c.addr, c.data);
             }
         }

@@ -5,13 +5,19 @@ project(M3 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Set build mode
-set(BUILD_MODE Debug)
+# Default to a Debug build so that the internal asserts stay enabled.
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+endif()
 
-# Include directories
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+option(M3_SANITIZE "Build with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+option(M3_BUILD_TESTS "Build the test executables" ON)
+
+add_compile_options(-Wall -Wextra)
+if(M3_SANITIZE)
+    add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
+    add_link_options(-fsanitize=address,undefined)
+endif()
 
 # Gather all source files
 set(M3_SOURCES
@@ -20,15 +26,20 @@ set(M3_SOURCES
     src/third_party/lrand.cpp
     src/utils/rvutils.cpp
     src/utils/tracer.cpp
+    src/bridges/bridge_boom/bridge_boom.cpp
 )
 
 # Define the static library
 add_library(m3 STATIC ${M3_SOURCES})
 
-# Optionally, link third-party headers (already covered via include)
 target_include_directories(m3 PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/bridges/bridge_boom
 )
 
 # Add tests or other subdirectories
-add_subdirectory(tests)
+if(M3_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

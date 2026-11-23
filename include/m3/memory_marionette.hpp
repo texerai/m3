@@ -102,6 +102,26 @@ namespace m3
 
         bool has_error(Inst_id iid) const;
 
+        /** is_tracked
+        * True while the operation is still in the reorder buffer.
+        */
+        bool is_tracked(Inst_id iid) const;
+
+        /** error_text
+        * The error recorded for the operation (empty if none or retired).
+        */
+        std::string error_text(Inst_id iid) const;
+
+        /** size
+        * Number of memory operations currently tracked (not yet retired)
+        */
+        size_t size() const { return rob.size(); }
+
+        /** dump_oldest
+        * print the n oldest tracked memory operations
+        */
+        void dump_oldest(size_t n) const;
+
         /** dump
         * print/dump the internal state
         */

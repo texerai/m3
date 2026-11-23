@@ -15,7 +15,7 @@ namespace m3
         std::string msg;
         char buffer[1024];
 
-        for (const auto c : chunks) {
+        for (const auto &c : chunks) {
             if (device) {
                 msg.append(" DEVICE");
             }

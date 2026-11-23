@@ -32,20 +32,34 @@ namespace m3
 
     // Hooks can be triggered at the same clock cycle.
     // Prioritize the hooks. The bridge function of the hook
-    // with higher priority will execute first.
+    // with higher priority will execute first; hooks of equal
+    // priority execute in the order they were registered.
+    //
+    // Within a cycle, store addresses/data must be known before loads
+    // perform (a load can forward from a store whose data arrives in
+    // the same cycle), and loads must perform before they commit.
+    // Events keyed by ROB id that share a cycle with a CreateMemop for
+    // the same id belong to the previous occupant of that ROB entry
+    // (BOOM never produces address/data/completion in the enqueue
+    // cycle), so CreateMemop runs last.
+    //
+    // A store's completion and the cache data write that makes it
+    // globally visible can land in the same cycle: the completion has to
+    // be registered first or the store stays pending until the line is
+    // touched again, and loads of its value on other harts look illegal.
     static std::map<RtlHook, uint32_t> kRtlHookPriority = {
-        { RtlHook::kCreateMemop, 0 },
-        { RtlHook::kAddMemopAddress, 0 },
-        { RtlHook::kPerformLoad, 0 },
-        { RtlHook::kAddStoreData, 0 },
-        { RtlHook::kCompleteStore, 0 },
-        { RtlHook::kCommitMemop, 0 },
+        { RtlHook::kAddMemopAddress, 4 },
+        { RtlHook::kAddStoreData, 4 },
+        { RtlHook::kPerformLoad, 3 },
+        { RtlHook::kCommitMemop, 2 },
+        { RtlHook::kCompleteStore, 1 },
+        { RtlHook::kUpdateCacheLineState, 0 },
+        { RtlHook::kUpdateCacheLineData, 0 },
         { RtlHook::kFlushRob, 0 },
         { RtlHook::kBranchMispredict, 0 },
         { RtlHook::kBranchResolve, 0 },
         { RtlHook::kBranchPredictionStart, 0 },
-        { RtlHook::kUpdateCacheLineState, 0 },
-        { RtlHook::kUpdateCacheLineData, 0 }
+        { RtlHook::kCreateMemop, 0 }
     };
 
     // Data that is passed from the RTL to the M3 model when
